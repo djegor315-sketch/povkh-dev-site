@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InnerHeroSignal from "../../components/InnerHeroSignal.astro";
 
 const locale = "ru" as const;
 ---
@@ -19,6 +20,7 @@ const locale = "ru" as const;
       <a class="button button-secondary" href="/ru/services/">Посмотреть услуги</a>
       <a class="text-link" href="/ru/contact/">Обсудить проект ↗</a>
     </nav>
+    <InnerHeroSignal variant="missing" />
   </section>
 </BaseLayout>
 

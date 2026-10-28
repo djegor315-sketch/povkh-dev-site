@@ -9,6 +9,8 @@ for (const shell of document.querySelectorAll<HTMLElement>("[data-project-brief]
   const token = shell.querySelector<HTMLInputElement>("[data-idempotency-key]");
   const errorCopy = shell.querySelector<HTMLTemplateElement>("[data-error-copy]");
   const demoMode = shell.dataset.deliveryMode === "demo";
+  const isRu = shell.dataset.locale === "ru";
+  const review = shell.querySelector<HTMLElement>("[data-brief-review]");
   let current = 0;
   let sending = false;
 
@@ -17,12 +19,56 @@ for (const shell of document.querySelectorAll<HTMLElement>("[data-project-brief]
   startedAt.value = String(Date.now());
   token.value = crypto.randomUUID();
 
-  const showStep = (index: number) => {
+  // Only known service identifiers affect the selection; never copy arbitrary URL text.
+  const params = new URLSearchParams(location.search);
+  const serviceCategories: Record<string, string> = { brand: "brand", web: "website", connect: "connected" };
+  const goalCategories: Record<string, string> = { launch: "website", reframe: "website", connect: "connected" };
+  const category = serviceCategories[params.get("service") ?? ""] ?? goalCategories[params.get("goal") ?? ""];
+  if (category) {
+    const choice = [...form.querySelectorAll<HTMLInputElement>('input[name="category"]')].find((input) => input.value === category);
+    if (choice) choice.checked = true;
+  }
+
+  const readableValue = (name: string) => {
+    const control = form.elements.namedItem(name);
+    if (control instanceof RadioNodeList) return [...control].find((item) => item instanceof HTMLInputElement && item.checked)?.parentElement?.textContent?.trim() ?? "";
+    if (control instanceof HTMLSelectElement) return control.selectedOptions[0]?.textContent?.trim() ?? "";
+    return control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement ? control.value : "";
+  };
+  const summaryFields = [
+    ["category", isRu ? "Задача" : "Project"],
+    ["deliveryWindow", isRu ? "Срок" : "Timing"],
+    ["budget", isRu ? "Формат" : "Scope"],
+  ];
+  const updateReview = () => {
+    if (!review) return;
+    review.replaceChildren(...summaryFields.map(([name, label]) => {
+      const item = document.createElement("p");
+      item.textContent = `${label}: ${readableValue(name)}`;
+      return item;
+    }));
+    review.hidden = false;
+  };
+  shell.querySelector<HTMLButtonElement>("[data-download-brief]")?.addEventListener("click", () => {
+    const fields = [...summaryFields, ["context", isRu ? "Описание" : "Context"], ["siteUrl", isRu ? "Сайт" : "Website"], ["name", isRu ? "Имя" : "Name"], ["email", "Email"], ["company", isRu ? "Компания" : "Company"]];
+    const content = `Povkh.Dev\n\n${fields.map(([name, label]) => `${label}: ${readableValue(name)}`).join("\n\n")}`;
+    const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "povkh-project-brief.txt";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  const showStep = (index: number, moveFocus = true) => {
     current = Math.max(0, Math.min(steps.length - 1, index));
     steps.forEach((step, stepIndex) => { step.hidden = stepIndex !== current; });
     progress.textContent = `${current + 1} / ${steps.length}`;
     progress.setAttribute("aria-valuenow", String(current + 1));
-    steps[current].querySelector<HTMLElement>("input, textarea, select")?.focus();
+    if (current === 2) updateReview();
+    if (moveFocus) steps[current].querySelector<HTMLElement>("input, textarea, select")?.focus();
   };
 
   const validStep = () => {
@@ -104,5 +150,5 @@ for (const shell of document.querySelectorAll<HTMLElement>("[data-project-brief]
     void send();
   });
   if (demoMode) submit.addEventListener("click", () => { void send(); });
-  showStep(0);
+  showStep(0, false);
 }

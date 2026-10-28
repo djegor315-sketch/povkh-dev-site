@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import InnerHeroSignal from "../components/InnerHeroSignal.astro";
 import type { Locale } from "../lib/i18n";
 
 interface Props {
@@ -13,6 +14,7 @@ const props = Astro.props;
 
 <BaseLayout {...props}>
   <div class="content-shell container">
+    {props.locale === "ru" && <InnerHeroSignal variant="record" />}
     <article><slot /></article>
   </div>
 </BaseLayout>

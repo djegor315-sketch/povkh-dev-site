@@ -4,6 +4,8 @@ import DualHero from "../components/home/DualHero.astro";
 import ServiceSystems from "../components/home/ServiceSystems.astro";
 import SignatureInteraction from "../components/home/SignatureInteraction.astro";
 import { getFeaturedWork, getProcess, getServices, getSite, getTeam } from "../lib/content";
+import plexSansLatin from "../assets/fonts/ibm-plex-sans-latin-wght-normal.woff2?url";
+import plexMonoLatin from "../assets/fonts/ibm-plex-mono-latin-500-normal.woff2?url";
 import "../styles/home.css";
 
 const site = await getSite("en");
@@ -19,8 +21,9 @@ if (featuredWork.length !== 2) throw new Error("English homepage requires exactl
   currentPath="/"
   title={site.meta.title}
   description={site.meta.description}
+  preloadFonts={[plexSansLatin, plexMonoLatin]}
 >
-  <DualHero locale="en" {site} work={featuredWork} />
+  <DualHero locale="en" {site} />
 
   <ServiceSystems locale="en" {services} />
   <SignatureInteraction locale="en" />
@@ -48,7 +51,7 @@ if (featuredWork.length !== 2) throw new Error("English homepage requires exactl
     <div class="studio-home-inner container">
       <div>
         <p class="eyebrow">05 / Studio</p>
-        <h2 id="studio-title">Two people. One accountable system.</h2>
+        <h2 id="studio-title">An independent studio. One accountable system.</h2>
       </div>
       <div class="studio-note">
         <p>{team.intro}</p>

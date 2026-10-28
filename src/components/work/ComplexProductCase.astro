@@ -1,0 +1,273 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getWorkCase } from "../../lib/content";
+import { render } from "astro:content";
+
+interface Props {
+  caseSlug: "kzms" | "endokey";
+}
+
+const { caseSlug } = Astro.props;
+const caseStudy = await getWorkCase("ru", caseSlug);
+const { Content } = await render(caseStudy);
+const isKzms = caseSlug === "kzms";
+const labels = isKzms ? {
+  h1: "Переработка каталога промышленных сеток КЗМС",
+  eyebrow: "Клиентский проект · КЗМС · промышленное производство",
+  live: "Открыть каталог КЗМС",
+  map: "Путь к подбору",
+  steps: ["Отрасль", "Задача", "Параметры", "Запрос"],
+  story: "Как переработали каталог",
+  relatedHref: "/ru/work/endokey/",
+  relatedLabel: "ENDOkey: бренд и сайт для врачей",
+  relatedText: "Ещё один проект, где потребовалось разобраться в сложном продукте и профессиональном языке покупателей.",
+} : {
+  h1: "ENDOkey: бренд и сайт для врачей",
+  eyebrow: "Клиентский проект · ENDOkey · эндодонтия",
+  live: "Открыть сайт ENDOkey",
+  map: "Айдентика в продукте",
+  steps: ["Назначение", "Принцип работы", "Материалы", "Покупка"],
+  story: "Как собрали бренд и сайт",
+  relatedHref: "/ru/work/kzms/",
+  relatedLabel: "КЗМС: переработка каталога промышленных сеток",
+  relatedText: "Промышленный проект, где ассортимент и технические данные собраны вокруг задач покупателей и подбора продукции.",
+};
+const metaTitle = isKzms
+  ? "КЗМС | Переработка каталога промышленных сеток | Povkh.Dev"
+  : "ENDOkey | Позиционирование, бренд и сайт | Povkh.Dev";
+---
+
+<BaseLayout
+  locale="ru"
+  currentPath={`/ru/work/${caseSlug}/`}
+  title={metaTitle}
+  description={caseStudy.data.summary}
+  hasAlternate={!isKzms}
+>
+  <div class:list={["complex-case", { "complex-case-kzms": isKzms }]}>
+    <header class="case-hero container">
+      <div class="case-intro">
+        <p class="eyebrow">{labels.eyebrow}</p>
+        <h1>{labels.h1}</h1>
+        <p class="case-summary">{caseStudy.data.summary}</p>
+        <a class="button" href={caseStudy.data.liveSite} rel="external">{labels.live}</a>
+      </div>
+
+      {isKzms ? (
+        <div class="case-map" aria-label={labels.map}>
+          <p class="map-label">{labels.map}</p>
+          <ol>
+            {labels.steps.map((step, index) => (
+              <li><span>0{index + 1}</span><strong>{step}</strong></li>
+            ))}
+          </ol>
+        </div>
+      ) : (
+        <figure class="case-proof" data-case-proof>
+          <img
+            data-case-asset
+            src="/assets/work/endokey/product-hero.jpg"
+            alt="Инструменты ENDOkey в фирменной упаковке рядом со стоматологическим зеркалом и пинцетом"
+            width="720"
+            height="1000"
+            decoding="async"
+          />
+          <figcaption>
+            <span>{labels.map}</span>
+            <strong>Логотип, упаковка и визуальная система ENDOkey</strong>
+          </figcaption>
+        </figure>
+      )}
+    </header>
+
+    <section class="case-scope container" aria-labelledby={`${caseSlug}-scope-title`}>
+      <p class="eyebrow" id={`${caseSlug}-scope-title`}>Сделали</p>
+      <ul>{caseStudy.data.scope.map((item) => <li>{item}</li>)}</ul>
+    </section>
+
+    {!isKzms && (
+      <section class="site-evidence container" data-site-evidence aria-labelledby="endokey-site-evidence-title">
+        <header class="site-evidence-heading">
+          <p class="eyebrow">Сайт ENDOkey</p>
+          <h2 id="endokey-site-evidence-title">Сайт ведёт от назначения продукта к покупке</h2>
+        </header>
+        <figure>
+          <img
+            data-case-asset
+            src="/assets/work/endokey/site-home.jpg"
+            alt="Главная страница сайта ENDOkey с описанием продукта и предметной фотографией"
+            width="1440"
+            height="960"
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>
+            <span>Структура объяснения</span>
+            <strong>Назначение → принцип работы → материалы → покупка</strong>
+          </figcaption>
+        </figure>
+      </section>
+    )}
+
+    {isKzms && (
+      <section class="catalog-comparison container" data-case-comparison aria-labelledby="catalog-comparison-title">
+        <header class="comparison-heading">
+          <p class="eyebrow">Каталог КЗМС</p>
+          <h2 id="catalog-comparison-title">Что мешало покупателю и как изменился путь</h2>
+        </header>
+
+        <div class="comparison-grid">
+          <article class="comparison-state comparison-before">
+            <figure>
+              <img
+                data-case-asset
+                src="/assets/work/kzms/catalog-before.jpg"
+                alt="Прежний каталог КЗМС с промышленными сетками, проволокой и товарами для дома"
+                width="1440"
+                height="960"
+                decoding="async"
+              />
+              <figcaption>Прежняя структура каталога</figcaption>
+            </figure>
+            <div class="comparison-copy">
+              <p class="state-label">Было</p>
+              <h3>Было: товары вперемешку</h3>
+              <p>Промышленные сетки стояли рядом с проволокой, изделиями из сетки и разделом «Товары для дачи и дома».</p>
+              <p>В общей выдаче было 400 непрофильных карточек: вёдра, болты, шурупы и другие товары. Покупателю приходилось отсеивать лишнее до предметного разговора о сетке.</p>
+              <a href="https://rosset-kzms.ru/catalog/" rel="external">Посмотреть прежний каталог ↗</a>
+            </div>
+          </article>
+
+          <article class="comparison-state comparison-after">
+            <figure>
+              <img
+                data-case-asset
+                src="/assets/work/kzms/catalog-after.jpg"
+                alt="Переработанный каталог КЗМС с выбором промышленных сеток по отраслям"
+                width="1440"
+                height="960"
+                decoding="async"
+              />
+              <figcaption>Переработанная структура каталога</figcaption>
+            </figure>
+            <div class="comparison-copy">
+              <p class="state-label">Стало</p>
+              <h3>Стало: сетки по задачам производства</h3>
+              <p>Каталог сосредоточен на промышленных сетках. Покупатель начинает с знакомой ему отрасли и видит конкретные задачи оборудования.</p>
+              <p class="selection-path">Отрасль → задача оборудования → параметры → запрос на подбор</p>
+              <a href="https://rosset-kzms.ru/catalog-preview-v5/" rel="external">Посмотреть переработанный каталог ↗</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    )}
+
+    <article class="case-story container" aria-labelledby={`${caseSlug}-story-title`}>
+      <header>
+        <p class="eyebrow">{labels.eyebrow}</p>
+        <h2 id={`${caseSlug}-story-title`}>{labels.story}</h2>
+      </header>
+      <div class="story-body"><Content /></div>
+    </article>
+
+    <section class="case-result container" aria-label="Следующий шаг">
+      <a class="button" href={caseStudy.data.liveSite} rel="external">{labels.live}</a>
+      <a class="button button-secondary" href="/ru/contact/">Обсудить похожий проект</a>
+    </section>
+
+    <aside class="related-case container" aria-labelledby={`${caseSlug}-related-title`}>
+      <p class="eyebrow">Связанный кейс</p>
+      <h2 id={`${caseSlug}-related-title`}>{labels.relatedLabel}</h2>
+      <p>{labels.relatedText}</p>
+      <a href={labels.relatedHref}>Посмотреть кейс</a>
+    </aside>
+
+    <nav class="case-next container" aria-label="Навигация по кейсам">
+      <a href="/ru/work/">← Все работы</a>
+      {!isKzms && <a href="/work/endokey/">English version →</a>}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .complex-case { --case-panel: #143d6b; --case-accent: #24a45d; border-bottom: 1px solid var(--ink); }
+  .complex-case-kzms { --case-panel: var(--ink); --case-accent: var(--warm-coral); }
+  .case-hero { display: grid; min-height: min(48rem, calc(100svh - 7rem)); padding-block: var(--space-8); grid-template-columns: minmax(0, 7fr) minmax(19rem, 5fr); gap: var(--space-7); }
+  .case-intro { display: flex; min-width: 0; align-items: flex-start; flex-direction: column; justify-content: flex-end; }
+  .case-intro h1 { max-width: 11ch; margin: var(--space-5) 0; font-family: var(--font-display); font-size: clamp(3rem, 6.2vw, 6.4rem); letter-spacing: -0.075em; line-height: 0.9; }
+  .complex-case-kzms .case-intro h1 { max-width: 15ch; overflow-wrap: normal; font-size: clamp(2.6rem, 5.2vw, 5.5rem); hyphens: auto; }
+  .case-summary { max-width: 42rem; font-size: clamp(1.05rem, 1.7vw, 1.35rem); }
+  .case-intro .button { margin-top: var(--space-4); }
+  .case-map { display: grid; min-width: 0; overflow: hidden; padding: var(--space-6); color: var(--paper); background: var(--case-panel); grid-template-rows: auto 1fr; }
+  .map-label { margin: 0; color: var(--case-accent); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .case-map ol { align-self: end; margin: 0; padding: 0; border-top: 1px solid var(--paper); list-style: none; }
+  .case-map li { display: grid; padding-block: var(--space-4); border-bottom: 1px solid var(--paper); grid-template-columns: 3rem 1fr; align-items: baseline; gap: var(--space-3); }
+  .case-map li span { color: var(--case-accent); font-family: var(--font-mono); font-size: 0.7rem; }
+  .case-map li strong { font-family: var(--font-display); font-size: clamp(1rem, 2vw, 1.5rem); }
+  .case-proof { display: grid; min-width: 0; min-height: 36rem; margin: 0; overflow: hidden; border: 1px solid var(--ink); background: var(--case-panel); grid-template-rows: minmax(0, 1fr) auto; }
+  .case-proof img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .case-proof figcaption { display: grid; padding: var(--space-4); color: var(--paper); background: var(--case-panel); gap: var(--space-2); }
+  .case-proof figcaption span { color: var(--case-accent); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .case-proof figcaption strong { max-width: 28rem; font-size: clamp(1rem, 1.6vw, 1.25rem); }
+  .case-scope { padding-block: var(--space-7); border-block: 1px solid var(--ink); }
+  .case-scope ul { display: grid; margin: var(--space-5) 0 0; padding: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); list-style: none; }
+  .case-scope li { padding: var(--space-4); border: 1px solid var(--ink); border-right: 0; font-family: var(--font-display); font-size: clamp(0.9rem, 1.5vw, 1.2rem); line-height: 1.2; }
+  .case-scope li:last-child { border-right: 1px solid var(--ink); }
+  .site-evidence { padding-block: var(--space-9); }
+  .site-evidence-heading { display: grid; margin-bottom: var(--space-6); grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-7); }
+  .site-evidence-heading h2 { max-width: 17ch; margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 5vw, 5rem); letter-spacing: -0.065em; line-height: 0.96; }
+  .site-evidence figure { margin: 0; border: 1px solid var(--ink); background: var(--case-panel); }
+  .site-evidence figure img { display: block; width: 100%; height: auto; }
+  .site-evidence figcaption { display: grid; padding: var(--space-4); color: var(--paper); grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-7); }
+  .site-evidence figcaption span { color: var(--case-accent); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .site-evidence figcaption strong { font-size: clamp(1rem, 1.8vw, 1.35rem); }
+  .catalog-comparison { padding-block: var(--space-9); }
+  .comparison-heading { display: grid; margin-bottom: var(--space-6); grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-7); }
+  .comparison-heading h2 { max-width: 18ch; margin: 0; font-family: var(--font-display); font-size: clamp(2.3rem, 5vw, 5rem); letter-spacing: -0.065em; line-height: 0.96; }
+  .comparison-grid { display: grid; border: 1px solid var(--ink); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .comparison-state { min-width: 0; }
+  .comparison-state + .comparison-state { border-left: 1px solid var(--ink); }
+  .comparison-state figure { margin: 0; border-bottom: 1px solid var(--ink); background: var(--ink); }
+  .comparison-state figure img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; object-position: top; }
+  .comparison-state figcaption { padding: var(--space-3) var(--space-4); color: var(--paper); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .comparison-copy { padding: var(--space-6); }
+  .state-label { margin: 0 0 var(--space-3); color: var(--muted); font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .comparison-copy h3 { max-width: 18ch; margin: 0 0 var(--space-4); font-family: var(--font-display); font-size: clamp(1.7rem, 3vw, 3rem); letter-spacing: -0.055em; line-height: 0.98; }
+  .comparison-copy p { max-width: 38rem; }
+  .comparison-copy a { display: inline-block; margin-top: var(--space-3); font-weight: 700; }
+  .comparison-after { background: var(--signal-lime); }
+  .selection-path { padding-block: var(--space-4); border-block: 1px solid var(--ink); font-family: var(--font-mono); font-size: clamp(0.82rem, 1.3vw, 1rem); font-weight: 700; }
+  .case-story { display: grid; padding-block: var(--space-9); grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-7); }
+  .case-story > header > h2, .related-case h2 { max-width: 9ch; margin: var(--space-4) 0; overflow-wrap: anywhere; font-family: var(--font-display); font-size: clamp(2.3rem, 5vw, 5rem); letter-spacing: -0.065em; line-height: 0.96; }
+  .story-body { min-width: 0; }
+  .story-body :global(h2) { margin: var(--space-7) 0 var(--space-3); font-family: var(--font-display); font-size: clamp(1.4rem, 2.4vw, 2.1rem); letter-spacing: -0.045em; line-height: 1.05; }
+  .story-body :global(h2:first-child) { margin-top: 0; }
+  .story-body :global(p) { max-width: 48rem; }
+  .case-result { display: flex; padding-block: var(--space-7); border-top: 1px solid var(--ink); flex-wrap: wrap; gap: var(--space-4); }
+  .related-case { padding-block: var(--space-8); border-top: 2px solid var(--povkh-pink); color: #f4f1ef; background: #0d0d10; }
+  .related-case h2 { max-width: 16ch; }
+  .related-case p:not(.eyebrow) { max-width: 42rem; }
+  .related-case a { font-weight: 700; }
+  .case-next { display: flex; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-6) var(--space-9); border-top: 1px solid var(--ink); }
+  .case-next a { font-weight: 700; }
+  @media (max-width: 64rem) {
+    .case-hero { min-height: auto; grid-template-columns: 1fr; }
+    .case-intro { min-height: 30rem; }
+    .case-map, .case-proof { min-height: 27rem; }
+    .comparison-heading, .site-evidence-heading { grid-template-columns: 1fr; }
+    .case-story { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 48rem) {
+    .case-intro h1 { font-size: clamp(2.4rem, 12vw, 4.2rem); }
+    .complex-case-kzms .case-intro h1 { font-size: clamp(2rem, 10vw, 3.3rem); overflow-wrap: break-word; }
+    .case-scope ul { grid-template-columns: 1fr 1fr; }
+    .case-scope li:nth-child(2) { border-right: 1px solid var(--ink); }
+    .case-scope li:nth-child(n + 3) { border-top: 0; }
+    .case-scope li:nth-child(4) { border-right: 1px solid var(--ink); }
+    .comparison-grid { grid-template-columns: 1fr; }
+    .comparison-state + .comparison-state { border-top: 1px solid var(--ink); border-left: 0; }
+    .comparison-copy { padding: var(--space-5); }
+    .site-evidence figcaption { grid-template-columns: 1fr; gap: var(--space-2); }
+    .case-next { align-items: flex-start; flex-direction: column; }
+  }
+</style>

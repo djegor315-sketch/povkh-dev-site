@@ -5,6 +5,15 @@ interface Props { locale: Locale }
 const { locale } = Astro.props;
 const isRu = locale === "ru";
 const prefix = isRu ? "/ru" : "";
+const related = isRu ? [
+  { href: "/ru/work/kzms/", label: "Как устроена переработка каталога КЗМС" },
+  { href: "/ru/services/#brand", label: "Что входит в работу над брендом" },
+  { href: "/ru/contact/", label: "Рассказать о своей задаче" },
+] : [
+  { href: "/work/endokey/", label: "Explore the ENDOkey website" },
+  { href: "/services/", label: "Explore brand and website services" },
+  { href: "/contact/", label: "Tell us about your project" },
+];
 const notes = isRu ? [
   {
     number: "01",
@@ -52,15 +61,22 @@ const notes = isRu ? [
 ];
 ---
 
-<section class="blog-hero container" aria-labelledby="blog-title">
-  <p class="eyebrow">{isRu ? "Блог Povkh.Dev" : "Povkh.Dev blog"}</p>
-  <h1 id="blog-title">{isRu ? "Заметки о брендах, сайтах и связанных системах" : "Notes on brands, websites and connected systems"}</h1>
-  <p>{isRu ? "Коротко разбираем решения, из которых складывается цельный цифровой продукт." : "Short explanations of the decisions behind a coherent digital product."}</p>
+<section class:list={["blog-hero container", { "inner-hero-layout": isRu }]} aria-labelledby="blog-title">
+  <div class="blog-hero-copy inner-hero-copy">
+    <p class="eyebrow">{isRu ? "Блог Povkh.Dev" : "Povkh.Dev blog"}</p>
+    <h1 id="blog-title">{isRu ? "Заметки о брендах, сайтах и связанных системах" : "Notes on brands, websites and connected systems"}</h1>
+    <p>{isRu ? "Коротко разбираем решения, из которых складывается цельный цифровой продукт." : "Short explanations of the decisions behind a coherent digital product."}</p>
+  </div>
+  {isRu && (
+    <figure class="blog-editorial-media" data-editorial-image="blog" aria-hidden="true">
+      <img src="/assets/editorial/blog-editorial.webp" alt="" width="1536" height="1024" decoding="async" fetchpriority="high" />
+    </figure>
+  )}
 </section>
 
 <section class="blog-notes container" aria-label={isRu ? "Заметки" : "Notes"}>
-  {notes.map((note) => (
-    <article class="blog-note" data-blog-note>
+  {notes.map((note, index) => (
+    <article class:list={["blog-note", { "blog-note-ru": isRu }]} data-blog-note>
       <header>
         <span class="metadata">{note.number} / {note.tag}</span>
         <h2>{note.title}</h2>
@@ -68,6 +84,7 @@ const notes = isRu ? [
       <div>
         <p class="note-lead">{note.lead}</p>
         <p>{note.body}</p>
+        <a class="text-link" href={related[index].href}>{related[index].label} ↗</a>
       </div>
     </article>
   ))}
@@ -80,11 +97,19 @@ const notes = isRu ? [
 
 <style>
   .blog-hero { display: grid; min-height: 35rem; padding-block: var(--space-8); border-bottom: 1px solid var(--ink); grid-template-columns: 3fr 9fr; gap: var(--space-5); align-content: end; }
+  .blog-hero-copy { display: contents; }
   .blog-hero h1 { max-width: 15ch; margin: 0; font-family: var(--font-display); font-size: clamp(2.5rem, 6vw, 6.3rem); letter-spacing: -0.065em; line-height: 0.98; }
   .blog-hero > p:last-child { max-width: 38rem; margin: var(--space-5) 0 0; grid-column: 2; font-size: 1.2rem; }
   .blog-notes { padding-block: var(--space-8); }
   .blog-note { display: grid; padding-block: var(--space-7); border-top: 1px solid var(--ink); grid-template-columns: 5fr 7fr; gap: var(--space-7); }
   .blog-note:last-child { border-bottom: 1px solid var(--ink); }
+  .blog-editorial-media { position: relative; min-height: clamp(22rem, 46vw, 38rem); margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: clamp(1.2rem, 2.4vw, 2rem); background: #09080b; box-shadow: 0 1.5rem 5rem rgb(34 5 23 / 0.22); }
+  .blog-editorial-media::after { position: absolute; inset: 0; background: linear-gradient(150deg, transparent 48%, rgb(255 47 146 / 0.1)); content: ""; pointer-events: none; }
+  .blog-editorial-media img { width: 100%; height: 100%; min-height: inherit; object-fit: cover; filter: saturate(0.86) contrast(1.04); }
+  .blog-note-ru { min-width: 0; margin-bottom: var(--space-5); overflow: hidden; padding: 0; border: 1px solid var(--line); border-radius: 0.8rem; grid-template-columns: minmax(15rem, 5fr) minmax(0, 7fr); gap: 0; background: rgb(10 9 12 / 0.82); }
+  .blog-note-ru > header, .blog-note-ru > div { padding: var(--space-6); }
+  .blog-note-ru > div { border-left: 1px solid var(--line); }
+  .blog-note-ru:last-child { border-bottom: 1px solid var(--line); }
   .blog-note h2 { max-width: 18ch; margin: var(--space-4) 0 0; font-family: var(--font-display); font-size: clamp(1.8rem, 3.8vw, 3.8rem); letter-spacing: -0.05em; line-height: 1.05; }
   .blog-note p { max-width: 42rem; }
   .note-lead { font-size: clamp(1.15rem, 2vw, 1.45rem); font-weight: 600; }
@@ -93,6 +118,7 @@ const notes = isRu ? [
   @media (max-width: 52rem) {
     .blog-hero, .blog-note { grid-template-columns: minmax(0, 1fr); }
     .blog-hero { min-height: auto; }
+    .blog-note-ru > div { border-top: 1px solid var(--line); border-left: 0; }
     .blog-hero > p:last-child { grid-column: 1; }
     .blog-cta { align-items: flex-start; flex-direction: column; }
   }

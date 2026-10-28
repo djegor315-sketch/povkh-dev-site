@@ -1,0 +1,112 @@
+---
+type Variant = "services" | "process" | "work" | "studio" | "blog" | "contact" | "record" | "missing";
+
+interface Props { variant: Variant }
+const { variant } = Astro.props;
+---
+
+<div class="inner-hero-signal" data-inner-hero-signal data-variant={variant} aria-hidden="true">
+  <svg viewBox="0 0 560 320" role="presentation">
+    <path class="signal-grid" d="M0 64H560M0 160H560M0 256H560M112 0V320M280 0V320M448 0V320" />
+
+    {variant === "services" && (
+      <g class="services-signal">
+        <path d="M56 72H188C232 72 238 160 282 160H504" />
+        <path d="M56 160H504" />
+        <path d="M56 248H188C232 248 238 160 282 160" />
+        <circle cx="56" cy="72" r="8" /><circle cx="56" cy="160" r="8" /><circle cx="56" cy="248" r="8" />
+        <circle class="signal-hot" cx="282" cy="160" r="11" /><circle cx="504" cy="160" r="8" />
+      </g>
+    )}
+    {variant === "process" && (
+      <g class="process-signal">
+        <path class="signal-dash" d="M48 246C112 246 105 202 164 202S218 144 278 144 335 94 394 94 444 55 512 55" />
+        {[ [48,246], [164,202], [278,144], [394,94], [512,55] ].map(([cx, cy], index) => (
+          <g><circle class={index === 4 ? "signal-hot" : ""} cx={cx} cy={cy} r={index === 4 ? 11 : 7} /><path class="tick" d={`M${cx} ${cy + 18}v18`} /></g>
+        ))}
+      </g>
+    )}
+    {variant === "work" && (
+      <g class="work-signal">
+        <rect x="70" y="72" width="286" height="178" rx="2" />
+        <rect x="114" y="50" width="286" height="178" rx="2" />
+        <rect class="signal-hot-frame" x="158" y="28" width="286" height="178" rx="2" />
+        <path class="signal-hot-line" d="M184 164h214" />
+        <circle class="signal-hot" cx="398" cy="164" r="8" />
+      </g>
+    )}
+    {variant === "studio" && (
+      <g class="studio-signal">
+        <circle cx="134" cy="160" r="46" /><circle cx="426" cy="160" r="46" />
+        <path d="M180 160H252M308 160H380" />
+        <circle class="signal-hot-frame" cx="280" cy="160" r="28" />
+        <circle class="signal-hot" cx="280" cy="160" r="7" />
+        <path class="signal-hot-line" d="M300 140l38-38M308 160h54M300 180l38 38" />
+      </g>
+    )}
+    {variant === "blog" && (
+      <g class="blog-signal">
+        <path d="M62 76H402M62 116H492M62 156H352M62 212H462M62 252H304" />
+        <path class="signal-hot-line" d="M410 76h66M360 156h116M312 252h164" />
+        <circle class="signal-hot" cx="492" cy="116" r="7" /><circle class="signal-hot" cx="462" cy="212" r="7" />
+      </g>
+    )}
+    {variant === "contact" && (
+      <g class="contact-signal">
+        <circle cx="66" cy="72" r="7" /><circle cx="66" cy="160" r="7" /><circle cx="66" cy="248" r="7" />
+        <path d="M73 72H214L302 160H488M73 160H302M73 248H214L302 160" />
+        <circle class="signal-hot" cx="302" cy="160" r="11" />
+        <path class="signal-hot-line" d="M488 160l-24-16M488 160l-24 16" />
+      </g>
+    )}
+    {variant === "record" && (
+      <g class="record-signal">
+        <path d="M112 44H370L448 122V276H112Z" /><path d="M370 44v78h78" />
+        <path d="M160 122h164M160 164h218M160 206h178" />
+        <circle class="signal-hot-frame" cx="396" cy="232" r="37" />
+        <path class="signal-hot-line" d="M378 232l12 12 25-29" />
+      </g>
+    )}
+    {variant === "missing" && (
+      <g class="missing-signal">
+        <path class="signal-dash" d="M48 160H206" /><path class="signal-dash" d="M354 160H512" />
+        <path d="M206 160l34-34M320 194l34-34" />
+        <circle cx="48" cy="160" r="8" /><circle class="signal-hot" cx="512" cy="160" r="10" />
+        <path class="signal-hot-line" d="M488 136l24 24-24 24" />
+      </g>
+    )}
+  </svg>
+</div>
+
+<style>
+  .inner-hero-signal {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    min-height: 240px;
+    overflow: hidden;
+    border-block: 1px solid rgb(23 21 24 / 0.22);
+    background: transparent;
+  }
+  svg { display: block; width: 100%; height: 100%; min-height: 240px; }
+  :global(.inner-hero-signal) path,
+  :global(.inner-hero-signal) circle,
+  :global(.inner-hero-signal) rect {
+    fill: none;
+    stroke: rgb(23 21 24 / 0.58);
+    stroke-width: 1.4;
+    vector-effect: non-scaling-stroke;
+  }
+  :global(.inner-hero-signal) .signal-grid { stroke: rgb(23 21 24 / 0.08); stroke-width: 1; }
+  :global(.inner-hero-signal) .signal-dash { stroke-dasharray: 8 9; }
+  :global(.inner-hero-signal) .tick { stroke: rgb(23 21 24 / 0.2); }
+  :global(.inner-hero-signal) .signal-hot { fill: #ff2f92; stroke: #ff2f92; }
+  :global(.inner-hero-signal) .signal-hot-line,
+  :global(.inner-hero-signal) .signal-hot-frame { stroke: #ff2f92; stroke-width: 2; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.inner-hero-signal) .signal-hot,
+    :global(.inner-hero-signal) .signal-hot-line { transition: transform 500ms cubic-bezier(.16, 1, .3, 1); }
+    .inner-hero-signal:hover :global(.signal-hot) { transform: translateX(5px); }
+    .inner-hero-signal:hover :global(.signal-hot-line) { transform: translateX(3px); }
+  }
+</style>

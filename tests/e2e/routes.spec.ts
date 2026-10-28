@@ -1,17 +1,18 @@
 import { expect, test } from "@playwright/test";
+import { configureTestAnalytics } from "./helpers/analytics";
 
 const cases = [
   {
     path: "/",
     language: "en",
-    heading: "Your website should lead to an enquiry. Your brand should help people choose you.",
+    heading: "Websites shaped by the task. Not by a template.",
     equivalent: "/ru/",
     menuLabel: "Open menu",
   },
   {
     path: "/ru/",
     language: "ru",
-    heading: "Сайт должен вести к заявке. Бренд — помогать выбрать вас.",
+    heading: "Создаём сайты с характером.",
     equivalent: "/",
     menuLabel: "Открыть меню",
   },
@@ -31,7 +32,7 @@ for (const { path, language, heading, equivalent, menuLabel } of cases) {
       page.getByRole("link", { name: /skip to content|перейти к содержанию/i }),
     ).toHaveAttribute("href", "#main-content");
     await expect(page.getByTestId("language-switch")).toHaveAttribute("href", equivalent);
-    await expect(page.getByRole("navigation", { name: /primary|основная/i })).toBeAttached();
+    await expect(page.locator('nav[aria-label]').first()).toBeAttached();
   });
 
   test(`${path} mobile menu is keyboard operable`, async ({ page }) => {
@@ -80,6 +81,18 @@ const localizedRoutes = [
   ["/cookies/", "/ru/cookies/"],
 ] as const;
 
+const russianOnlyRoutes = ["/ru/work/kzms/"] as const;
+
+for (const route of russianOnlyRoutes) {
+  test(`${route} exposes canonical Russian metadata without inventing an English equivalent`, async ({ page }) => {
+    const response = await page.goto(route);
+    expect(response?.ok()).toBe(true);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", route);
+    await expect(page.locator('link[rel="alternate"][hreflang="ru"]')).toHaveAttribute("href", route);
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveCount(0);
+  });
+}
+
 for (const [en, ru] of localizedRoutes) {
   test(`${en} and ${ru} expose reciprocal localized metadata`, async ({ page }) => {
     for (const [path, locale, alternate] of [[en, "en", ru], [ru, "ru", en]] as const) {
@@ -110,6 +123,7 @@ test("legal routes expose their draft review boundary in preview", async ({ page
 });
 
 test("analytics stays inert before consent and after withdrawal", async ({ page }) => {
+  await configureTestAnalytics(page);
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
     if (request.url().includes("/api/event")) analyticsRequests.push(request.url());
@@ -125,6 +139,7 @@ test("analytics stays inert before consent and after withdrawal", async ({ page 
 });
 
 test("analytics sends only allowlisted non-PII fields after consent", async ({ page }) => {
+  await configureTestAnalytics(page);
   const payloads: Record<string, unknown>[] = [];
   await page.route("**/api/event", async (route) => {
     payloads.push(JSON.parse(route.request().postData() ?? "{}"));
@@ -133,13 +148,14 @@ test("analytics sends only allowlisted non-PII fields after consent", async ({ p
   await page.goto("/");
   await page.getByRole("button", { name: "Accept analytics" }).click();
   await page.evaluate(() => {
-    const meta = document.createElement("meta");
-    meta.name = "povkh-analytics-endpoint";
-    meta.content = "/api/event";
-    document.head.append(meta);
     window.dispatchEvent(new CustomEvent("povkh:track", { detail: { name: "cta_click", surface: "home", email: "must-not-leak@example.org", freeText: "must not leak" } }));
     window.dispatchEvent(new CustomEvent("povkh:track", { detail: { name: "invented_event", surface: "home" } }));
   });
   await expect.poll(() => payloads.length).toBe(1);
   expect(payloads[0]).toEqual({ name: "cta_click", surface: "home" });
+});
+
+test("unconfigured analytics does not ask visitors for a meaningless consent", async ({ page }) => {
+  await page.goto("/ru/");
+  await expect(page.getByTestId("consent-controls")).toBeHidden();
 });

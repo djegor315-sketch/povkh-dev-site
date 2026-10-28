@@ -3,8 +3,8 @@
   "languageName": "English",
   "routes": ["/", "/work/", "/work/endokey/", "/work/povkh-lab/", "/services/", "/process/", "/studio/", "/blog/", "/contact/", "/privacy/", "/cookies/"],
   "meta": {
-    "title": "Povkh.Dev — branding and websites with a clear path to enquiry",
-    "description": "Positioning, identity, copy and websites for businesses that need a clear path from first impression to enquiry."
+    "title": "Povkh.Dev — websites for businesses and independent projects",
+    "description": "We create websites for businesses, founders and independent projects: research, structure, design and development. Explore real Povkh.Dev work."
   },
   "nav": [
     { "id": "work", "label": "Work", "href": "/work/" },
@@ -15,8 +15,9 @@
     { "id": "contact", "label": "Contact", "href": "/contact/" }
   ],
   "hero": {
-    "eyebrow": "Branding + websites",
-    "title": "Your website should lead to an enquiry. Your brand should help people choose you.",
+    "eyebrow": "Povkh.Dev · web studio",
+    "title": "Websites shaped by the task. Not by a template.",
+    "lead": "For businesses, founders and independent creative projects. We study the product, audience and goal, then shape the structure, visual language and build.",
     "primaryCta": "Discuss your project",
     "metaFact": "Europe / Russia · EN / RU",
     "workLabel": "Selected work / 02"

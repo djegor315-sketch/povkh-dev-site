@@ -1,47 +1,70 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import CasePreview from "../../../components/CasePreview.astro";
-import CaseEvidence from "../../../components/work/CaseEvidence.astro";
 import { getLocalizedWork } from "../../../lib/content";
+import { getImage } from "astro:assets";
+import giuliaHome from "../../../assets/work/giulia-live-home.png";
 
 const locale = "ru" as const;
 const cases = await getLocalizedWork(locale);
+const giuliaPreview = await getImage({ src: giuliaHome, width: 1200, format: "webp", quality: 76 });
+const caseMedia = {
+  kzms: { src: "/assets/work/kzms/catalog-after.jpg", alt: "Переработанный каталог промышленных сеток КЗМС" },
+  endokey: { src: "/assets/work/endokey/site-home.jpg", alt: "Главная страница сайта ENDOkey" },
+  "povkh-lab": { src: "/assets/work/povkh-lab/home-en-desktop.webp", alt: "Главная страница музыкального лейбла POVKH LAB" },
+} as const;
 ---
 
-<BaseLayout locale={locale} currentPath="/ru/work/" title="Работы — Povkh.Dev" description="Избранные клиентские и авторские работы Povkh.Dev.">
+<BaseLayout locale={locale} currentPath="/ru/work/" title="Работы Povkh.Dev | Сложные продукты, брендинг и сайты" description="Кейсы Povkh.Dev: переработка промышленного каталога КЗМС, бренд и сайт ENDOkey, многоязычная система POVKH LAB.">
   <div class="work-index container">
-    <header class="work-index-hero">
-      <p class="eyebrow">Избранные работы / 02</p>
-      <h1>Сделано, чтобы следующий шаг был понятен.</h1>
-      <p class="lede">Бренды и сайты для продуктов и независимых проектов.</p>
+    <header class="work-index-hero inner-hero-layout">
+      <div class="inner-hero-copy">
+        <p class="eyebrow">Работы Povkh.Dev</p>
+        <h1>Работы со сложными продуктами</h1>
+        <p class="lede">Проекты, в которых потребовалось разобраться в предмете, покупателях и реальном пути к обращению.</p>
+      </div>
+      <figure class="editorial-hero-media" data-editorial-hero="work">
+        <img src="/assets/work/kzms/catalog-after.jpg" alt="Фрагмент переработанного промышленного каталога КЗМС" width="1440" height="960" decoding="async" fetchpriority="high" />
+      </figure>
     </header>
 
     <section aria-labelledby="case-list-title">
       <div class="section-heading">
-        <p class="eyebrow">Архив кейсов</p>
-        <h2 id="case-list-title">От позиционирования до работающего сайта.</h2>
+        <p class="eyebrow">Кейсы</p>
+        <h2 id="case-list-title">От исследования до работающего решения</h2>
       </div>
       <div class="case-list">
-        {cases.map((caseStudy) => (
+        {cases.map((caseStudy) => {
+          const media = caseMedia[caseStudy.data.caseSlug as keyof typeof caseMedia];
+          return (
           <div class="case-list-item">
             <CasePreview
               title={caseStudy.data.title}
-              context={caseStudy.data.context}
+              context={`${caseStudy.data.relationship === "client" ? "Клиентский проект" : "Собственный проект основателей"} · ${caseStudy.data.context}`}
               summary={caseStudy.data.summary}
               href={`/ru/work/${caseStudy.data.caseSlug}/`}
-              action="Читать кейс"
-              accessibleAction={`Читать кейс ${caseStudy.data.title}`}
-            />
-            <CaseEvidence
-              label={caseStudy.data.relationship === "client" ? "Клиентский проект" : "Проект основателей"}
-              source={caseStudy.data.publicSource}
-              date={new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeZone: "UTC" }).format(caseStudy.data.evidenceDate)}
-              text={caseStudy.data.disclosure}
-              sourceLabel="Источник"
-              dateLabel="Проверено"
+              action="Открыть кейс"
+              accessibleAction={`Открыть кейс ${caseStudy.data.title}`}
+              mediaSrc={media.src}
+              mediaAlt={media.alt}
+              mediaVariant={caseStudy.data.caseSlug}
             />
           </div>
-        ))}
+          );
+        })}
+        <div class="case-list-item giulia-index-card">
+          <CasePreview
+            title="Giulia Povkh"
+            context="Клиентский проект · портфолио Content Creator & SMM"
+            summary="Трёхъязычное портфолио собирает проекты, видео и направления работы в понятный путь: выбрать формат, увидеть работу в контексте и перейти к обсуждению."
+            href="https://giuliapovkh.ru"
+            action="Смотреть живой сайт"
+            accessibleAction="Смотреть сайт Giulia Povkh"
+            mediaSrc={giuliaPreview.src}
+            mediaAlt="Новая главная страница портфолио Giulia Povkh"
+            mediaVariant="giulia"
+          />
+        </div>
       </div>
     </section>
   </div>
@@ -56,14 +79,30 @@ const cases = await getLocalizedWork(locale);
   .section-heading { display: grid; grid-template-columns: minmax(8rem, 2fr) minmax(0, 7fr); gap: var(--space-7); margin-bottom: var(--space-6); }
   .section-heading h2 { margin: 0; font-family: var(--font-display); font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -0.065em; line-height: 0.96; }
   .case-list { display: grid; gap: var(--space-8); }
-  .case-list-item { display: grid; grid-template-columns: minmax(0, 7fr) minmax(15rem, 5fr); gap: var(--space-6); align-items: stretch; }
-  .case-list-item :global(.case-preview) { display: flex; min-height: 28rem; padding: var(--space-6); border: 1px solid var(--ink); flex-direction: column; justify-content: flex-end; background: var(--warm-coral); box-shadow: var(--shadow-offset); }
+  .case-list-item { min-width: 0; }
+  .case-list-item :global(.case-preview) { display: grid; min-height: 32rem; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 0.8rem; grid-template-columns: minmax(18rem, 0.9fr) minmax(0, 1.1fr); color: #f4f1ef; background: linear-gradient(118deg, rgb(255 47 146 / 0.12), transparent 42%), #0d0d10; box-shadow: none; }
+  .case-list-item :global(.case-preview-media) { position: relative; height: clamp(32rem, 42vw, 38rem); border-right: 1px solid var(--line); }
+  .case-list-item :global(.case-preview-media::after) { position: absolute; inset: 0; background: linear-gradient(145deg, transparent 52%, rgb(255 47 146 / 0.13)); content: ""; pointer-events: none; }
+  .case-list-item :global(.case-preview-media img) { filter: saturate(0.88) contrast(1.03); transition: filter 500ms ease, transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .case-list-item :global(.case-preview:hover .case-preview-media img) { filter: saturate(1) contrast(1.04); transform: scale(1.02); }
+  .case-list-item :global([data-case-preview-media="kzms"] img) { object-position: top center; }
+  .case-list-item :global([data-case-preview-media="endokey"] img) { object-position: top center; }
+  .case-list-item :global([data-case-preview-media="povkh-lab"] img) { object-position: top center; }
+  .case-list-item :global(.case-preview-copy) { padding: var(--space-6); }
   .case-list-item :global(.case-preview h2) { margin-block: var(--space-4); font-family: var(--font-display); font-size: clamp(2.4rem, 6vw, 6rem); letter-spacing: -0.07em; line-height: 0.9; }
   .case-list-item :global(.case-preview p:not(.metadata)) { max-width: 34rem; }
   .case-list-item :global(.case-preview .button) { align-self: flex-start; margin-top: var(--space-4); }
+  .giulia-index-card :global(.case-preview) { min-height: 36rem; }
+  .giulia-index-card :global(.case-preview .metadata) { color: var(--povkh-pink); }
+  .giulia-index-card :global(.case-preview .button) { color: #160910; background: var(--povkh-pink); }
   @media (max-width: 56rem) {
-    .case-list-item, .section-heading { grid-template-columns: 1fr; gap: var(--space-5); }
+    .section-heading { grid-template-columns: minmax(0, 1fr); gap: var(--space-5); }
     .section-heading > * { min-width: 0; }
     .section-heading h2 { overflow-wrap: anywhere; font-size: clamp(1.8rem, 8vw, 3rem); hyphens: auto; }
   }
+  @media (max-width: 42rem) {
+    .case-list-item :global(.case-preview) { grid-template-columns: minmax(0, 1fr); }
+    .case-list-item :global(.case-preview-media) { height: 18rem; border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  @media (prefers-reduced-motion: reduce) { .case-list-item :global(.case-preview-media img) { transition: none; } }
 </style>

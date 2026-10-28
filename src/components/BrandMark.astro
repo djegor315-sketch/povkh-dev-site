@@ -1,0 +1,24 @@
+---
+interface Props { size?: number; class?: string }
+const { size = 44, class: className } = Astro.props;
+---
+
+<svg
+  class:list={["brand-mark", className]}
+  data-brand-mark
+  width={size}
+  height={size}
+  viewBox="0 0 64 64"
+  fill="none"
+  aria-hidden="true"
+>
+  <circle cx="27" cy="32" r="18" stroke="currentColor" stroke-width="2.5" />
+  <circle cx="27" cy="32" r="3.25" fill="currentColor" />
+  <path data-signal-stroke d="M42.5 22.5 53 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+  <path data-signal-stroke d="M45 32h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+  <path data-signal-stroke d="m42.5 41.5 9 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+</svg>
+
+<style>
+  .brand-mark { display: block; overflow: visible; color: var(--povkh-pink, #ff2f92); }
+</style>

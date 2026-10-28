@@ -18,6 +18,11 @@ const demoMode = __POVKH_SITE_MODE__ !== "production";
       <p>{demoMode
         ? "Три коротких шага: задача, рамки проекта и ваши контакты. В демоверсии данные никуда не отправляются."
         : "Три коротких шага: задача, рамки проекта и ваши контакты. Мы используем эти данные только для ответа на ваш запрос."}</p>
+      <div class="contact-next">
+        <h2>Что будет дальше</h2>
+        <ol><li>Разберём вашу задачу и материалы.</li><li>Уточним объём сайта и нужные подключения.</li><li>Обсудим состав работы, оценку и этапы.</li></ol>
+      </div>
+      {publicEmail && <a class="text-link" href={`mailto:${publicEmail}`}>{publicEmail} ↗</a>}
     </header>
     <ProjectBrief locale="ru" {publicEmail} />
   </section>

@@ -13,21 +13,20 @@ const faq = await getFaq(locale);
   locale={locale}
   currentPath={currentPath}
   title={`Studio — ${site.meta.title}`}
-  description="Meet the independent two-person Povkh.Dev studio and understand how responsibility stays close to the work."
+  description="Meet the independent Povkh.Dev studio and understand how responsibility stays close to the work."
 >
   <div class="studio-page">
-    <section class="studio-hero container" aria-labelledby="studio-title">
-      <p class="eyebrow">03 / People and responsibility</p>
-      <h1 id="studio-title">Studio</h1>
-      <p class="studio-lede">{team.intro}</p>
+    <section class="studio-hero inner-hero-layout container" aria-labelledby="studio-title">
+      <div class="inner-hero-copy"><p class="eyebrow">03 / People and responsibility</p><h1 id="studio-title">Studio</h1><p class="studio-lede">{team.intro}</p></div>
+      <figure class="studio-hero-media" aria-hidden="true"><img src="/assets/editorial/studio-team.webp" alt="" width="1536" height="1024" decoding="async" fetchpriority="high" /></figure>
     </section>
 
     <section class="studio-gate container" aria-labelledby="people-title">
       <header class="section-heading">
         <p class="eyebrow">A real team, not a composite profile</p>
-        <h2 id="people-title">Two people. One accountable system.</h2>
+        <h2 id="people-title">A focused team. One accountable system.</h2>
       </header>
-      <p class="studio-gate-copy">The permanent team consists of two real people. Full profiles will be added after roles, biographies, portraits and links are approved.</p>
+      <p class="studio-gate-copy">The studio brings product, design, SEO and frontend work into one accountable delivery system. Full personal profiles remain unpublished until their roles, biographies, portraits and links are approved.</p>
       <div class="founder-records" aria-label="Founder records">
         {team.items.map((founder, index) => (
           <article class="founder-record" data-testid="founder-record">

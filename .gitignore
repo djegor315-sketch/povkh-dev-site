@@ -5,6 +5,7 @@ dist/
 artifacts/
 test-results/
 playwright-report/
+output/
 
 .env
 .env.*
@@ -12,3 +13,8 @@ playwright-report/
 
 .DS_Store
 *.log
+
+# Local Harness and browser runtime state
+.playwright-cli/
+.superpowers/**/state/
+.superpowers/brainstorm/.last-*

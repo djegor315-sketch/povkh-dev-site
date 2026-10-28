@@ -1,11 +1,25 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getServices, getSite } from "../../lib/content";
+import { Image } from "astro:assets";
+import serviceBrand from "../../../public/assets/editorial/service-brand.webp";
+import serviceWeb from "../../../public/assets/editorial/service-web.webp";
+import serviceGrowth from "../../../public/assets/editorial/service-growth.webp";
 
 const locale = "ru" as const;
 const currentPath = "/ru/services/";
 const site = await getSite(locale);
 const services = await getServices(locale);
+const serviceImages = [
+  serviceBrand,
+  serviceWeb,
+  serviceGrowth,
+];
+const examples = [
+  { href: "/ru/work/endokey/", name: "ENDOkey — бренд и сайт медицинского продукта" },
+  { href: "/ru/work/kzms/", name: "КЗМС — переработка промышленного каталога" },
+  { href: "/ru/work/povkh-lab/", name: "POVKH LAB — сайт музыкального проекта" },
+];
 const formats = [
   ["Исследование", "Задача, границы, структура и практическая дорожная карта."],
   ["Бренд-система", "Стратегия и согласованный набор материалов айдентики."],
@@ -30,11 +44,17 @@ const exclusions = [
   description="Услуги по созданию брендов, сайтов и интеграций с понятными форматами начала, составом и границами."
 >
   <div class="info-page services-page">
-    <section class="info-hero container" aria-labelledby="services-title">
-      <p class="eyebrow">01 / Системы услуг</p>
-      <h1 id="services-title">Услуги</h1>
-      <p class="info-lede">{services.intro}</p>
-      <p class="info-note">Мы собираем работу вокруг определённого результата, сохраняя одну точку ответственности внутри Povkh.Dev.</p>
+    <section class="info-hero inner-hero-layout container" aria-labelledby="services-title">
+      <div class="inner-hero-copy">
+        <p class="eyebrow">Бренд, сайт и интеграции</p>
+        <h1 id="services-title">Услуги</h1>
+        <p class="info-lede">{services.intro}</p>
+        <p class="info-note">Обсуждайте задачу с людьми, которые будут её решать. Определим состав работы, подготовим материалы и соберём сайт.</p>
+        <a class="text-link" href="/ru/contact/">Обсудить вашу задачу ↗</a>
+      </div>
+      <figure class="editorial-hero-media" data-editorial-hero="services">
+        <Image src={serviceWeb} alt="Работа над макетами сайта для компьютера, планшета и телефона" widths={[480, 800, 1146]} sizes="(max-width: 760px) calc(100vw - 40px), 50vw" decoding="async" fetchpriority="high" loading="eager" />
+      </figure>
     </section>
 
     <section class="service-systems container" aria-labelledby="systems-title">
@@ -44,7 +64,11 @@ const exclusions = [
       </header>
       <div class="service-grid">
         {services.items.map((service, index) => (
-          <article class="service-card">
+          <article class="service-card" id={service.id}>
+            <div class="service-media" data-editorial-image="service" aria-hidden="true">
+              <Image src={serviceImages[index]} alt="" widths={[400, 640, 960]} sizes="(max-width: 760px) calc(100vw - 40px), 32vw" loading="lazy" decoding="async" />
+            </div>
+            <div class="service-card-copy">
             <p class="metadata">0{index + 1}</p>
             <h2>{service.title}</h2>
             <p class="service-situation">{service.situation}</p>
@@ -52,8 +76,10 @@ const exclusions = [
             <p>{service.outcome}</p>
             <h3>В составе</h3>
             <ul>{service.includes.map((item) => <li>{item}</li>)}</ul>
-            <p class="service-boundary"><strong>Граница:</strong> {service.boundary}</p>
-            <a class="text-link" href="/ru/contact/">{service.cta} <span aria-hidden="true">↗</span></a>
+            <p class="service-boundary"><strong>Уточним перед стартом:</strong> {service.boundary}</p>
+            <a class="service-example" href={examples[index].href}>{examples[index].name} <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href={`/ru/contact/?service=${service.id}`}>{service.cta} <span aria-hidden="true">↗</span></a>
+            </div>
           </article>
         ))}
       </div>
@@ -76,10 +102,10 @@ const exclusions = [
 
     <section class="exclusions-section container" aria-labelledby="exclusions-title">
       <header class="section-heading">
-        <p class="eyebrow">Граница — часть услуги</p>
-        <h2 id="exclusions-title">За пределами стартового каталога</h2>
+        <p class="eyebrow">Проекты с особыми требованиями</p>
+        <h2 id="exclusions-title">Что оценим отдельно</h2>
       </header>
-      <p>Эти направления не являются фиксированными пакетами первого релиза. Мы рассматриваем их после отдельной проверки платформы, компетенций, рисков и партнёров.</p>
+      <p>Для этих задач сначала разберём платформу, объём работы и необходимые подключения. После этого сможем предложить подходящий состав проекта.</p>
       <ul class="exclusions-list">{exclusions.map((item) => <li>{item}</li>)}</ul>
     </section>
 
@@ -101,23 +127,37 @@ const exclusions = [
   .section-heading { margin-block-end: var(--space-6); }
   .section-heading h2 { max-width: 20ch; margin-block: var(--space-3) 0; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.5rem); letter-spacing: -0.06em; line-height: 1; }
   .service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--ink); background: var(--ink); }
-  .service-card { display: flex; min-width: 0; padding: var(--space-5); flex-direction: column; background: var(--paper); }
+  .service-card { display: grid; min-width: 0; padding: 0; grid-template-rows: auto 1fr; background: rgb(10 9 12 / 0.92); }
+  .service-media { position: relative; min-height: 15rem; overflow: hidden; border-bottom: 1px solid var(--line); background: #09080b; }
+  .service-media::after { position: absolute; inset: 0; background: linear-gradient(155deg, transparent 48%, rgb(255 47 146 / 0.11)); content: ""; pointer-events: none; }
+  .service-media img { width: 100%; height: 100%; min-height: 15rem; object-fit: cover; filter: saturate(0.84) contrast(1.04); transition: transform 700ms cubic-bezier(.16, 1, .3, 1), filter 500ms ease; }
+  .service-card:nth-child(1) .service-media img { object-position: 52% center; }
+  .service-card:nth-child(2) .service-media img { object-position: center; }
+  .service-card:nth-child(3) .service-media img { object-position: 56% center; }
+  .service-card:hover .service-media img { filter: saturate(0.94) contrast(1.04); transform: scale(1.025); }
+  .service-card-copy { display: flex; min-width: 0; padding: var(--space-5); flex-direction: column; }
   .service-card h2 { margin-block: var(--space-3) var(--space-4); font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); letter-spacing: -0.06em; }
   .service-card h3 { margin-block: var(--space-5) var(--space-2); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
   .service-situation { min-height: 4.8rem; font-weight: 650; }
   .service-card ul { margin-block: 0; padding-inline-start: 1.2rem; }
   .service-boundary { margin-block: var(--space-5); padding-block-start: var(--space-4); border-top: 1px solid var(--line); color: var(--muted); font-size: 0.95rem; }
   .text-link { margin-block-start: auto; padding-block-start: var(--space-4); font-weight: 700; }
-  .formats-list { display: grid; margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-  .formats-list li { display: grid; padding-block: var(--space-4); grid-template-columns: 4rem 1fr; gap: var(--space-4); border-bottom: 1px solid var(--line); }
+  .formats-list { display: grid; margin: 0; padding: 0; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); list-style: none; }
+  .formats-list li { position: relative; display: grid; min-width: 0; min-height: 14rem; padding: var(--space-5); grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 0; border: 0; background: linear-gradient(155deg, rgb(18 13 18 / 0.9), rgb(8 8 10 / 0.86)); }
+  .formats-list li::before { position: absolute; top: 0; left: 0; width: 38%; height: 2px; background: var(--povkh-pink); box-shadow: 0 0 1rem rgb(255 47 146 / 0.35); content: ""; }
+  .formats-list li > div { padding-block: var(--space-4) var(--space-5); }
   .formats-list h3 { margin: 0 0 var(--space-1); font-size: 1.3rem; }
   .formats-list p { margin: 0; }
   .exclusions-section > p { max-width: 48rem; }
-  .exclusions-list { max-width: 48rem; margin-block: var(--space-5) 0; padding-inline-start: 1.2rem; columns: 2; column-gap: var(--space-7); }
-  .exclusions-list li { break-inside: avoid; margin-block-end: var(--space-3); }
+  .exclusions-list { display: grid; max-width: none; margin-block: var(--space-6) 0; padding: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); list-style: none; }
+  .exclusions-list li { position: relative; min-width: 0; min-height: 6rem; margin: 0; padding: var(--space-4) var(--space-4) var(--space-4) 3.5rem; overflow-wrap: anywhere; background: rgb(10 9 12 / 0.86); hyphens: auto; }
+  .exclusions-list li::before { position: absolute; top: 1.55rem; left: 1.3rem; width: 0.7rem; height: 0.7rem; border: 1px solid var(--povkh-pink); border-radius: 50%; content: ""; }
   .info-cta { display: grid; padding-block: var(--space-8); grid-template-columns: 2fr 2fr auto; align-items: end; gap: var(--space-5); }
   .info-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); letter-spacing: -0.05em; line-height: 1; }
   .info-cta p { margin: 0; }
+  @media (max-width: 70rem) { .formats-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .formats-list li:last-child { grid-column: 1 / -1; } }
   @media (max-width: 56rem) { .service-grid { grid-template-columns: 1fr; } .service-situation { min-height: 0; } .info-cta { grid-template-columns: 1fr 1fr; } .info-cta .button { grid-column: 1 / -1; justify-self: start; } }
+  @media (max-width: 36rem) { .formats-list { grid-template-columns: 1fr; } .formats-list li:last-child { grid-column: auto; } }
   @media (max-width: 36rem) { .exclusions-list { columns: 1; } .info-cta { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .service-media img { transition: none; } }
 </style>

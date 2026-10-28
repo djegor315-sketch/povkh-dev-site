@@ -1,42 +1,71 @@
-# Povkh.Dev
+# Povkh.Dev — исходники для совместной работы
 
-Bilingual Astro website for Povkh.Dev. The repository contains the editable site, localized content, ENDOkey and POVKH LAB case studies, and the automated quality suite.
+Актуальная локальная версия сайта от 5 сентября 2026 года: P-044, Astro, русские и английские маршруты, локальные изображения и шрифты. Это полный редактируемый проект, а не статическая сборка страницы.
 
-## Local development
+Вы распаковали полный исходный проект. Сопроводительные файлы и история передачи: https://github.com/djegor315-sketch/studio-harness/blob/handoff/povkh-dev-2026-09-05/docs/handoffs/povkh-dev/README.md.
 
-Requirements: Node.js 22.12 or newer.
+## Запуск
 
-```bash
+Нужен Node.js 22.12 или новее и npm. Откройте терминал в распакованной папке:
+
+```sh
 npm ci
-npm run dev
+npm run dev -- --host 127.0.0.1 --port 4322
 ```
 
-Astro prints the local preview URL after startup.
+Открыть **http://127.0.0.1:4322/ru/**. Английская главная: **http://127.0.0.1:4322/**. Изменения файлов отображаются через обновление Astro. Для первого запуска `.env` и платные сервисы не нужны.
 
-## Quality checks
+## Где работать
 
-```bash
-npm run test:all
-```
+- `src/pages/` — страницы; `/ru/` — русская версия, корень — английская.
+- `src/templates/home-ru.html`, `src/lib/ru-home.ts`, `src/pages/ru/index.astro` — текущая русская главная.
+- `src/styles/` — общие и страничные стили. Порядок подключения важен; после структурной перестановки style-блоков перезапустите dev server.
+- `src/components/`, `src/scripts/` — компоненты, меню, бриф и аналитика.
+- `src/content/` — тексты, услуги, команда и кейсы.
+- `public/` и `src/assets/` — необходимые изображения и шрифты.
+- `docs/release-readiness.md` — оставшиеся условия публичного запуска.
 
-Focused commands are also available:
+## Проверки
 
-```bash
+```sh
 npm run test:content
+npm run test:server
+npm run test:tooling
 npm run check
 npm run build
-npm run test:e2e
+npm run verify:build
 ```
 
-## Project boundaries
+Для браузерных проверок один раз установите браузеры. Оставьте dev server на порту 4322 запущенным, затем выполните в другом терминале:
 
-- The default build is a preview: legal copy is draft, the contact form is demo-only, and indexing remains disabled.
-- Do not publish claims about leads, sales, rankings, or medical outcomes without verified evidence and owner approval.
-- Copy `.env.example` to `.env` only when configuring a private local or deployment environment. Never commit `.env`.
+```sh
+npx playwright install chromium webkit
+npx playwright test --config tests/design-preview.config.ts --project=chromium --project=mobile-chromium --project=webkit --project=mobile-webkit
+```
 
-## Main paths
+Этот конфиг проверяет функциональность и адаптивность текущего preview. Исторические visual snapshots лежат в `tests/`, но не переутверждены для последнего дизайна; конфиг выше намеренно исключает `visual.spec.ts`. Запуск всех старых screenshot-тестов не следует путать с проверкой нового визуального эталона.
 
-- `src/content/` — localized site, service, process, team, legal, and case-study content.
-- `src/components/` — shared Astro components.
-- `src/pages/` — English and Russian routes.
-- `tests/` — content, browser, accessibility, responsive, and visual regression checks.
+Перед передачей архив был распакован и проверен на macOS; точные результаты — [VALIDATION.md](https://github.com/djegor315-sketch/studio-harness/blob/handoff/povkh-dev-2026-09-05/docs/handoffs/povkh-dev/VALIDATION.md). Windows/Linux в этом проходе не запускались.
+
+## Совместные изменения
+
+Архив не содержит чужую `.git`-историю или локальные разрешения Harness. Для своей ветки можно инициализировать Git в распакованной папке, зафиксировать исходное состояние и работать в отдельной ветке:
+
+```sh
+git init -b main
+git add .
+git commit -m "Import Povkh.Dev handoff"
+git switch -c feature/my-changes
+```
+
+Для возврата изменений зафиксируйте работу и передайте исходники или Git bundle, сохраняя исходный import commit. Не присылайте `node_modules`, `.env` или `dist`. Если будете подключать общий remote, сначала согласуйте репозиторий с владельцем: архив в приватном Harness не даёт разрешения опубликовать исходники в новом публичном репозитории.
+
+Для работы через Studio control plane создайте новый project packet на своей машине после подключения независимого checkout. Сессии и write-contract из чужого worktree переносить не нужно.
+
+## Текущее состояние
+
+Сайт запускается в preview: форма собирает и скачивает бриф, но не отправляет настоящие заявки; индексация выключена, юридические документы остаются черновиками. Контакт, доставка заявок, материалы об основателях, полная EN/IT синхронизация и production configuration ещё требуют завершения. Итальянской версии в архиве нет.
+
+Последний локальный замер главной: Lighthouse 90/100 без HTTP-сжатия и 98/100 в отдельном gzip-эксперименте на тех же файлах. Это не проверка будущего хостинга. Перед публикацией нужны сжатие текстовых ресурсов и live-проверка.
+
+Целостность: [MANIFEST.json](https://github.com/djegor315-sketch/studio-harness/blob/handoff/povkh-dev-2026-09-05/docs/handoffs/povkh-dev/MANIFEST.json) содержит хеш архива, каждого исходного файла и точную ревизию src. Хеш архива сверяется штатными средствами SHA-256 вашей ОС.

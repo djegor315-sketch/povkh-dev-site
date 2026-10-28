@@ -13,12 +13,13 @@ const site = defineCollection({
   schema: z.object({
     locale: z.enum(["en", "ru"]),
     languageName: z.string(),
-    routes: z.array(z.string()).length(11),
+    routes: z.array(z.string()).min(11),
     meta: z.object({ title: z.string(), description: z.string() }),
     nav: z.array(z.object({ id: z.string(), label: z.string(), href: z.string() })),
     hero: z.object({
       eyebrow: z.string(),
       title: z.string(),
+      lead: z.string().optional(),
       primaryCta: z.string(),
       metaFact: z.string(),
       workLabel: z.string(),
