@@ -1,0 +1,164 @@
+<div class="glyph-field" data-glyph-field role="group" tabindex="0" aria-label="Интерактивный знак Povkh.Dev. Перетаскивайте или используйте клавиши-стрелки; после отпускания знак соберётся.">
+  <canvas width="720" height="720" aria-hidden="true"></canvas>
+  <noscript>
+    <svg viewBox="0 0 320 320" aria-hidden="true">
+      <circle cx="140" cy="160" r="84" /><circle class="core" cx="140" cy="160" r="10" />
+      <path d="m208 110 48-36M224 160h66m-82 50 42 42" />
+    </svg>
+  </noscript>
+</div>
+
+<script>
+  const field = document.querySelector<HTMLElement>("[data-glyph-field]");
+  const canvas = field?.querySelector<HTMLCanvasElement>("canvas");
+  const context = canvas?.getContext("2d");
+
+  if (field && canvas && context) {
+    const glyphs = ["/", "\\", "+", "×", ":", "·", "–"];
+    const points: Array<{ x: number; y: number; z: number; glyph: string; signal?: boolean }> = [];
+    const addPoint = (x: number, y: number, z: number, signal = false) => {
+      points.push({ x, y, z, glyph: glyphs[points.length % glyphs.length], signal });
+    };
+    for (let index = 0; index < 92; index += 1) {
+      const angle = (index / 92) * Math.PI * 2;
+      addPoint(Math.cos(angle) * 0.56, Math.sin(angle) * 0.56, Math.sin(angle * 3) * 0.055);
+    }
+    for (const [angle, length] of [[-0.58, 0.5], [0, 0.58], [0.68, 0.48]] as const) {
+      for (let index = 1; index <= 24; index += 1) {
+        const distance = 0.56 + (index / 24) * length;
+        addPoint(Math.cos(angle) * distance, Math.sin(angle) * distance, Math.sin(index * 0.7) * 0.035, true);
+      }
+    }
+    for (let index = 0; index < 10; index += 1) {
+      const angle = (index / 10) * Math.PI * 2;
+      addPoint(Math.cos(angle) * 0.065, Math.sin(angle) * 0.065, 0.03, true);
+    }
+
+    let angleX = -0.22;
+    let angleY = 0.56;
+    let targetX = angleX;
+    let targetY = angleY;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let visible = true;
+    let frame = 0;
+    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+
+    const resize = () => {
+      const rect = field.getBoundingClientRect();
+      const ratio = Math.min(devicePixelRatio || 1, 2);
+      const size = Math.max(280, Math.round(Math.min(rect.width, rect.height || rect.width)));
+      canvas.width = Math.round(size * ratio);
+      canvas.height = Math.round(size * ratio);
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    const draw = () => {
+      frame = 0;
+      if (!visible) return;
+      const motionFactor = reducedMotion.matches ? 1 : (dragging ? 0.3 : 0.085);
+      angleX += (targetX - angleX) * motionFactor;
+      angleY += (targetY - angleY) * motionFactor;
+      const size = parseFloat(canvas.style.width) || 640;
+      context.clearRect(0, 0, size, size);
+      const scale = size * 0.46;
+      const cosX = Math.cos(angleX);
+      const sinX = Math.sin(angleX);
+      const cosY = Math.cos(angleY);
+      const sinY = Math.sin(angleY);
+      const projected = points.map((point) => {
+        const x1 = point.x * cosY - point.z * sinY;
+        const z1 = point.x * sinY + point.z * cosY;
+        const y1 = point.y * cosX - z1 * sinX;
+        const z2 = point.y * sinX + z1 * cosX;
+        const depth = 1 / (1.9 + z2);
+        return { ...point, x: size / 2 + x1 * scale * depth * 1.9, y: size / 2 + y1 * scale * depth * 1.9, z: z2, depth };
+      }).sort((left, right) => left.z - right.z);
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      for (const point of projected) {
+        const alpha = Math.max(0.28, Math.min(0.98, 0.62 + point.z * 0.36));
+        context.fillStyle = point.signal ? `rgb(255 47 146 / ${alpha})` : `rgb(23 21 24 / ${alpha * 0.76})`;
+        context.font = `${Math.max(9, 16 * point.depth * 1.9)}px "IBM Plex Mono", monospace`;
+        context.fillText(point.glyph, point.x, point.y);
+      }
+      if (dragging || Math.abs(targetX - angleX) > 0.002 || Math.abs(targetY - angleY) > 0.002) frame = requestAnimationFrame(draw);
+    };
+    const requestDraw = () => { if (!frame) frame = requestAnimationFrame(draw); };
+    const snap = (angle: number) => Math.round(angle / (Math.PI * 2)) * (Math.PI * 2);
+
+    field.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      field.setPointerCapture(event.pointerId);
+      requestDraw();
+    });
+    field.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      targetY += (event.clientX - lastX) * 0.008;
+      targetX -= (event.clientY - lastY) * 0.008;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      requestDraw();
+    });
+    const release = () => {
+      dragging = false;
+      targetX = snap(targetX);
+      targetY = snap(targetY);
+      requestDraw();
+    };
+    field.addEventListener("pointerup", release);
+    field.addEventListener("pointercancel", release);
+    const arrowKeys = new Set(["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"]);
+    field.addEventListener("keydown", (event) => {
+      if (!arrowKeys.has(event.key)) return;
+      event.preventDefault();
+      dragging = true;
+      if (event.key === "ArrowLeft") targetY -= 0.18;
+      if (event.key === "ArrowRight") targetY += 0.18;
+      if (event.key === "ArrowUp") targetX -= 0.18;
+      if (event.key === "ArrowDown") targetX += 0.18;
+      requestDraw();
+    });
+    field.addEventListener("keyup", (event) => {
+      if (arrowKeys.has(event.key)) release();
+    });
+    field.addEventListener("blur", release);
+    new ResizeObserver(() => { resize(); requestDraw(); }).observe(field);
+    new IntersectionObserver(([entry]) => {
+      visible = entry?.isIntersecting ?? true;
+      if (visible) requestDraw();
+      else if (frame) { cancelAnimationFrame(frame); frame = 0; }
+    }, { rootMargin: "120px" }).observe(field);
+    reducedMotion.addEventListener("change", () => {
+      if (reducedMotion.matches) { angleX = targetX; angleY = targetY; }
+      requestDraw();
+    });
+    resize();
+    draw();
+  }
+</script>
+
+<style>
+  .glyph-field {
+    position: relative;
+    display: grid;
+    width: min(44vw, 660px);
+    max-width: 100%;
+    aspect-ratio: 1;
+    place-items: center;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+  .glyph-field:active { cursor: grabbing; }
+  .glyph-field:focus-visible { outline: 2px solid #ff2f92; outline-offset: 6px; }
+  canvas { display: block; max-width: 100%; }
+  noscript svg { width: 100%; fill: none; stroke: #ff2f92; stroke-width: 2; }
+  noscript .core { fill: #171518; stroke: none; }
+  @media (max-width: 900px) { .glyph-field { width: min(88vw, 580px); } }
+</style>

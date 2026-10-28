@@ -1,7 +1,7 @@
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: "HOST=127.0.0.1 PORT=4322 node dist/server/entry.mjs",
+      startServerCommand: "node scripts/performance-runner.mjs serve",
       startServerReadyPattern: "Server listening",
       url: [
         "http://127.0.0.1:4322/",
@@ -10,10 +10,17 @@ module.exports = {
         "http://127.0.0.1:4322/contact/",
       ],
       numberOfRuns: 1,
+      // Use LHCI's supported Puppeteer runner because chrome-launcher's
+      // temporary-profile cleanup currently fails on Windows after an audit.
+      puppeteerScript: "./scripts/lighthouse-session.cjs",
+      puppeteerLaunchOptions: {
+        args: ["--no-sandbox"],
+      },
       settings: {
-        chromeFlags: "--headless=new --no-sandbox",
         onlyCategories: ["performance", "accessibility", "best-practices", "seo"],
-        skipAudits: ["is-crawlable"],
+        // Preview builds intentionally emit noindex and relative canonical/hreflang.
+        // Production discoverability is enforced separately by verify-build.mjs.
+        skipAudits: ["is-crawlable", "canonical", "hreflang"],
       },
     },
     assert: {

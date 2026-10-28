@@ -6,6 +6,13 @@ const locale = "en" as const;
 const currentPath = "/process/";
 const site = await getSite(locale);
 const process = await getProcess(locale);
+const stageImages = [
+  "/assets/process/01-understand.webp",
+  "/assets/process/02-formulate.webp",
+  "/assets/process/03-design.webp",
+  "/assets/process/04-connect.webp",
+  "/assets/process/05-verify.webp",
+];
 ---
 
 <BaseLayout
@@ -15,10 +22,9 @@ const process = await getProcess(locale);
   description="A five-stage Povkh.Dev process with a client-visible output at every stage."
 >
   <div class="process-page">
-    <section class="process-hero container" aria-labelledby="process-title">
-      <p class="eyebrow">02 / Delivery system</p>
-      <h1 id="process-title">Process</h1>
-      <p>{process.intro}</p>
+    <section class="process-hero inner-hero-layout container" aria-labelledby="process-title">
+      <div class="inner-hero-copy"><p class="eyebrow">02 / Delivery system</p><h1 id="process-title">Process</h1><p>{process.intro}</p></div>
+      <figure class="editorial-hero-media"><img src="/assets/process-principles/boundaries.webp" alt="Spatial system of boundaries and transitions" width="1440" height="960" decoding="async" fetchpriority="high" /></figure>
     </section>
 
     <section class="process-stages container" aria-labelledby="stages-title">
@@ -29,6 +35,7 @@ const process = await getProcess(locale);
       <ol class="stage-list">
         {process.items.map((stage, index) => (
           <li class="stage-item">
+            <div class="stage-media" aria-hidden="true"><img src={stageImages[index]} alt="" width="1400" height="788" loading="lazy" decoding="async" /></div>
             <span class="metadata">0{index + 1}</span>
             <div class="stage-copy">
               <h3>{stage.title}</h3>

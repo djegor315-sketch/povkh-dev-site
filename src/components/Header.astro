@@ -2,22 +2,25 @@
 import type { Locale } from "../lib/i18n";
 import type { CollectionEntry } from "astro:content";
 import LanguageSwitch from "./LanguageSwitch.astro";
+import BrandMark from "./BrandMark.astro";
 
 interface Props {
   locale: Locale;
   currentPath: string;
   site: CollectionEntry<"site">["data"];
+  hasAlternate?: boolean;
 }
 
-const { locale, currentPath, site } = Astro.props;
+const { locale, currentPath, site, hasAlternate = true } = Astro.props;
 const isRu = locale === "ru";
 const contactHref = site.nav.find(({ id }) => id === "contact")?.href ?? "/contact/";
 ---
 
 <header class="site-header" data-site-header>
   <div class="header-inner container">
-    <a class="wordmark" href={locale === "ru" ? "/ru/" : "/"} aria-label={isRu ? "Главная Povkh.Dev" : "Povkh.Dev home"}>
-      POVKH<span class="wordmark-dot">.</span>DEV
+    <a class:list={["wordmark", isRu && "wordmark-ru"]} href={locale === "ru" ? "/ru/" : "/"} aria-label={isRu ? "Главная Povkh.Dev" : "Povkh.Dev home"}>
+      <BrandMark size={22} />
+      <span>POVKH<span class="wordmark-dot">.</span>DEV</span>
     </a>
     <nav class="primary-nav" aria-label={isRu ? "Основная навигация" : "Primary navigation"}>
       <ul class="primary-links" data-testid="primary-links" data-primary-links>
@@ -29,8 +32,8 @@ const contactHref = site.nav.find(({ id }) => id === "contact")?.href ?? "/conta
       </ul>
     </nav>
     <div class="header-actions">
-      <LanguageSwitch locale={locale} currentPath={currentPath} />
-      <a class="button header-cta" href={contactHref}>{site.hero.primaryCta}</a>
+      {hasAlternate && <LanguageSwitch locale={locale} currentPath={currentPath} />}
+      <a class="header-cta" href={contactHref}><span>{site.hero.primaryCta}</span><i aria-hidden="true">→</i></a>
       <button
         class="menu-toggle"
         type="button"

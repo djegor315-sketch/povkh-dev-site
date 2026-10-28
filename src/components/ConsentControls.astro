@@ -6,9 +6,9 @@ const { locale } = Astro.props;
 const isRu = locale === "ru";
 ---
 
-<aside class="consent" data-consent-controls data-testid="consent-controls" aria-label={isRu ? "Настройки аналитики" : "Analytics settings"}>
+<aside class="consent" hidden={!__POVKH_ANALYTICS_ENDPOINT__} data-consent-controls data-testid="consent-controls" aria-label={isRu ? "Настройки аналитики" : "Analytics settings"}>
   <div class="consent-prompt" data-consent-prompt>
-    <p>{isRu ? "Разрешить анонимную аналитику? До согласия ничего не отправляется." : "Allow anonymous analytics? Nothing is sent before consent."}</p>
+    <p>{isRu ? "Разрешить аналитику посещений? Она включится только с вашего согласия." : "Allow usage analytics? It is enabled only with your consent."}</p>
     <div class="consent-actions">
       <button class="button" type="button" data-consent="granted">{isRu ? "Разрешить аналитику" : "Accept analytics"}</button>
       <button class="button button-secondary" type="button" data-consent="denied">{isRu ? "Отказаться" : "Decline"}</button>

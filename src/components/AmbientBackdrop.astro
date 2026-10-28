@@ -1,0 +1,68 @@
+<div class="aurora-backdrop" data-aurora-backdrop aria-hidden="true">
+  <span class="aurora-field aurora-field-rose" data-aurora-field></span>
+  <span class="aurora-field aurora-field-violet" data-aurora-field></span>
+</div>
+
+<style is:global>
+  html:has(.aurora-backdrop) { background: #f4efe8; }
+  body:has(.aurora-backdrop) {
+    isolation: isolate;
+    background-color: transparent;
+    background-image: none;
+  }
+  .aurora-backdrop {
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgb(247 211 221 / 0.54) 0 31%, transparent 31% 68%, rgb(204 222 235 / 0.5) 68% 100%),
+      #f4efe8;
+    contain: strict;
+  }
+  .aurora-field {
+    position: absolute;
+    display: block;
+    width: max(110vw, 88rem);
+    height: max(82vh, 52rem);
+    border-radius: 50%;
+    opacity: 0.72;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  .aurora-field-rose {
+    top: -45%;
+    right: -54%;
+    background: radial-gradient(ellipse at center, rgb(255 154 189 / 0.5) 0%, rgb(247 211 221 / 0.34) 44%, transparent 72%);
+    animation: auroraRoseDrift 26s ease-in-out infinite alternate;
+  }
+  .aurora-field-violet {
+    bottom: -48%;
+    left: -52%;
+    background: radial-gradient(ellipse at center, rgb(151 186 216 / 0.46) 0%, rgb(211 203 239 / 0.3) 44%, transparent 72%);
+    animation: auroraVioletDrift 32s ease-in-out -7s infinite alternate;
+  }
+  @keyframes auroraRoseDrift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(-6%, 5%, 0) scale(1.08); }
+  }
+  @keyframes auroraVioletDrift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(5%, -4%, 0) scale(1.1); }
+  }
+  @media (max-width: 40rem) {
+    .aurora-field { width: 150vw; min-width: 0; height: 86vh; }
+    .aurora-field-rose {
+      right: -72%;
+      background: radial-gradient(ellipse at center, rgb(255 154 189 / 0.36) 0%, rgb(247 211 221 / 0.24) 42%, transparent 70%);
+    }
+    .aurora-field-violet {
+      left: -68%;
+      background: radial-gradient(ellipse at center, rgb(151 186 216 / 0.34) 0%, rgb(211 203 239 / 0.2) 42%, transparent 72%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aurora-field { animation: none; }
+  }
+</style>

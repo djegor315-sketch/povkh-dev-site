@@ -3,45 +3,78 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import SeoHead from "../components/SeoHead.astro";
 import ConsentControls from "../components/ConsentControls.astro";
+import AmbientBackdrop from "../components/AmbientBackdrop.astro";
 import { getSite } from "../lib/content";
 import type { Locale } from "../lib/i18n";
-import "../styles/tokens.css";
-import "../styles/global.css";
+import baseStylesUrl from "../styles/base.css?url";
+import editorialInteriorUrl from "../styles/editorial-interior.css?url";
+import referenceEditorialUrl from "../styles/reference-editorial.css?url";
+import designCompletionUrl from "../styles/design-completion.css?url";
+import siteJourneyUrl from "../styles/site-journey.css?url";
 
 interface Props {
   locale: Locale;
   currentPath: string;
   title: string;
   description: string;
+  hasAlternate?: boolean;
+  shell?: "default" | "immersive";
+  bodyClass?: string;
+  preloadFonts?: string[];
 }
 
-const { locale, currentPath, title, description } = Astro.props;
+const {
+  locale,
+  currentPath,
+  title,
+  description,
+  hasAlternate = true,
+  shell = "default",
+  bodyClass,
+  preloadFonts = [],
+} = Astro.props;
 const robots = __POVKH_SITE_MODE__ === "production"
   ? "index, follow, max-image-preview:large"
   : "noindex, nofollow";
 const site = await getSite(locale);
 const isRu = locale === "ru";
+const resolvedBodyClass = [
+  "reference-editorial",
+  isRu ? "design-completion" : undefined,
+  bodyClass ?? (isRu && shell === "default" ? "editorial-interior" : undefined),
+].filter(Boolean).join(" ");
 ---
 
 <!doctype html>
 <html lang={locale} data-site-mode={__POVKH_SITE_MODE__}>
   <head>
-    <SeoHead {locale} {currentPath} {title} {description} {robots} />
+    <SeoHead {locale} {currentPath} {title} {description} {robots} {hasAlternate} />
+    <link rel="stylesheet" href={baseStylesUrl} />
+    {isRu && shell === "default" && <link rel="stylesheet" href={editorialInteriorUrl} />}
+    <link rel="stylesheet" href={referenceEditorialUrl} />
+    {isRu && <link rel="stylesheet" href={designCompletionUrl} />}
+    <link rel="stylesheet" href={siteJourneyUrl} />
+    {preloadFonts.map((href) => (
+      <link rel="preload" href={href} as="font" type="font/woff2" crossorigin="anonymous" />
+    ))}
     <script is:inline>
       document.documentElement.dataset.enhanced = "true";
       document.documentElement.dataset.motion = matchMedia("(prefers-reduced-motion: reduce)").matches ? "reduced" : "standard";
     </script>
   </head>
-  <body>
+  <body class={resolvedBodyClass}>
+    {isRu && <div class="reading-progress" data-reading-progress aria-hidden="true"></div>}
+    {isRu && <AmbientBackdrop />}
     <a class="skip-link" href="#main-content">{isRu ? "Перейти к содержанию" : "Skip to content"}</a>
     {__POVKH_SITE_MODE__ !== "production" && <div class="preview-banner" role="status">{site.previewNotice}</div>}
-    <Header {locale} {currentPath} {site} />
-    <main id="main-content" tabindex="-1"><slot /></main>
-    <Footer {locale} />
+    {shell === "default" && <Header {locale} {currentPath} {site} {hasAlternate} />}
+    {shell === "default" ? <main id="main-content" tabindex="-1"><slot /></main> : <slot />}
+    {shell === "default" && <Footer {locale} />}
     <ConsentControls {locale} />
     <script>
       import "../scripts/site";
       import "../scripts/analytics";
+      import "../scripts/reading-progress";
     </script>
   </body>
 </html>

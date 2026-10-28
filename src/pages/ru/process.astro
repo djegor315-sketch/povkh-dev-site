@@ -6,6 +6,18 @@ const locale = "ru" as const;
 const currentPath = "/ru/process/";
 const site = await getSite(locale);
 const process = await getProcess(locale);
+const stageImages = [
+  "/assets/process/01-understand.webp",
+  "/assets/process/02-formulate.webp",
+  "/assets/process/03-design.webp",
+  "/assets/process/04-connect.webp",
+  "/assets/process/05-verify.webp",
+];
+const principleImages = [
+  "/assets/process-principles/boundaries.webp",
+  "/assets/process-principles/quality.webp",
+  "/assets/process-principles/ownership.webp",
+];
 ---
 
 <BaseLayout
@@ -15,10 +27,15 @@ const process = await getProcess(locale);
   description="Пять этапов работы Povkh.Dev с понятным результатом для клиента на каждом."
 >
   <div class="process-page">
-    <section class="process-hero container" aria-labelledby="process-title">
-      <p class="eyebrow">02 / Система работы</p>
-      <h1 id="process-title">Процесс</h1>
-      <p>{process.intro}</p>
+    <section class="process-hero inner-hero-layout container" aria-labelledby="process-title">
+      <div class="inner-hero-copy">
+        <p class="eyebrow">02 / Система работы</p>
+        <h1 id="process-title">Процесс</h1>
+        <p>{process.intro}</p>
+      </div>
+      <figure class="editorial-hero-media" data-editorial-hero="process">
+        <img src="/assets/process-principles/boundaries.webp" alt="Пространственная система границ и переходов" width="1440" height="960" decoding="async" fetchpriority="high" />
+      </figure>
     </section>
 
     <section class="process-stages container" aria-labelledby="stages-title">
@@ -29,6 +46,18 @@ const process = await getProcess(locale);
       <ol class="stage-list">
         {process.items.map((stage, index) => (
           <li class="stage-item">
+            <div class={`stage-media stage-media-${index + 1}`} aria-hidden="true">
+              <img
+                data-process-stage-image
+                src={stageImages[index]}
+                alt=""
+                width="1400"
+                height="788"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="stage-media-signal"></span>
+            </div>
             <span class="metadata">0{index + 1}</span>
             <div class="stage-copy">
               <h3>{stage.title}</h3>
@@ -43,9 +72,18 @@ const process = await getProcess(locale);
     <section class="process-principles container" aria-labelledby="principles-title">
       <h2 id="principles-title">Полезная часть — на виду.</h2>
       <div class="principles-grid">
-        <p><strong>Границы остаются явными.</strong><br />У каждого этапа есть согласованное решение или результат, поэтому изменения получают понятное место.</p>
-        <p><strong>Качество проверяем в рамках работы.</strong><br />Доступность, производительность, отображение на разных экранах и передача проверяются до завершения работы.</p>
-        <p><strong>Одна точка ответственности.</strong><br />Если нужен специалист, Povkh.Dev остаётся ответственным за согласованный результат и коммуникацию.</p>
+        <article>
+          <figure class="principle-media" data-principle-image="boundaries" aria-hidden="true"><img src={principleImages[0]} alt="" width="1440" height="960" loading="lazy" decoding="async" /></figure>
+          <p><strong>Границы остаются явными.</strong><br />У каждого этапа есть согласованное решение или результат, поэтому изменения получают понятное место.</p>
+        </article>
+        <article>
+          <figure class="principle-media" data-principle-image="quality" aria-hidden="true"><img src={principleImages[1]} alt="" width="1440" height="960" loading="lazy" decoding="async" /></figure>
+          <p><strong>Качество проверяем в рамках работы.</strong><br />Доступность, производительность, отображение на разных экранах и передача проверяются до завершения работы.</p>
+        </article>
+        <article>
+          <figure class="principle-media" data-principle-image="ownership" aria-hidden="true"><img src={principleImages[2]} alt="" width="1440" height="960" loading="lazy" decoding="async" /></figure>
+          <p><strong>Одна точка ответственности.</strong><br />Если нужен специалист, Povkh.Dev остаётся ответственным за согласованный результат и коммуникацию.</p>
+        </article>
       </div>
     </section>
 
@@ -65,17 +103,41 @@ const process = await getProcess(locale);
   .process-stages, .process-principles, .process-cta { padding-block: var(--space-8); border-top: 1px solid var(--ink); }
   .section-heading { margin-block-end: var(--space-6); }
   .section-heading h2 { max-width: 22ch; margin-block: var(--space-3) 0; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.5rem); letter-spacing: -0.06em; line-height: 1; }
-  .stage-list { margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }
-  .stage-item { display: grid; padding-block: var(--space-5); grid-template-columns: 4rem minmax(12rem, 1fr) minmax(16rem, 1.2fr); gap: var(--space-5); border-bottom: 1px solid var(--line); }
+  .stage-list { display: grid; margin: 0; padding: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); list-style: none; }
+  .stage-item { display: flex; min-width: 0; padding: 0 0 var(--space-5); border: 0; flex-direction: column; gap: var(--space-4); background: rgb(10 9 12 / 0.88); }
+  .stage-item > :not(.signal-field) { margin-inline: var(--space-4); }
+  .stage-item > .stage-media { position: relative; min-height: 15rem; margin-inline: 0; overflow: hidden; border-bottom: 1px solid var(--line); background: #08070a; isolation: isolate; }
+  .stage-media img { width: 100%; height: 100%; min-height: 15rem; object-fit: cover; transition: filter 500ms ease, transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .stage-media::before { position: absolute; z-index: 1; inset: 0; background: linear-gradient(115deg, rgb(7 6 9 / 0.05), transparent 48%, rgb(255 47 146 / 0.09)); content: ""; pointer-events: none; }
+  .stage-media::after { position: absolute; z-index: 2; right: 1.4rem; bottom: 1.35rem; width: clamp(3.5rem, 8vw, 7rem); height: 1px; background: var(--povkh-pink); box-shadow: 0 0 0.8rem rgb(255 47 146 / 0.55); content: ""; pointer-events: none; transform: rotate(-28deg); transform-origin: right center; }
+  .stage-media-signal { position: absolute; z-index: 2; top: 1.35rem; left: 1.35rem; width: 0.75rem; aspect-ratio: 1; border: 1px solid var(--povkh-pink); border-radius: 50%; box-shadow: 0 0 1rem rgb(255 47 146 / 0.5); }
+  .stage-item:hover .stage-media img { filter: contrast(1.04) saturate(1.06); transform: scale(1.025); }
   .stage-item h3 { margin: 0 0 var(--space-2); font-family: var(--font-display); font-size: clamp(1.4rem, 2.8vw, 2.4rem); letter-spacing: -0.06em; }
+  .stage-item:nth-child(5) { grid-column: 1 / -1; }
+  .stage-item:nth-child(5) > .stage-media { min-height: 22rem; }
+  .stage-item:nth-child(5) .stage-media img { min-height: 22rem; object-position: center 58%; }
+  .stage-item h3 { overflow-wrap: anywhere; hyphens: auto; }
   .stage-item p { margin: 0; }
-  .stage-output { padding-inline-start: var(--space-5); border-inline-start: 2px solid var(--signal-lime); }
+  .stage-output { margin-top: auto !important; padding-block-start: var(--space-4); border-top: 1px solid rgb(255 47 146 / 0.5); }
   .process-principles h2 { margin-block: 0 var(--space-6); font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.5rem); letter-spacing: -0.06em; line-height: 1; }
   .principles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
-  .principles-grid p { margin: 0; padding-block-start: var(--space-4); border-top: 2px solid var(--electric-cobalt); }
+  .principles-grid > article { overflow: hidden; border: 1px solid var(--line); border-radius: 0.8rem; background: rgb(10 9 12 / 0.82); }
+  .principle-media { position: relative; min-height: 14rem; margin: 0; overflow: hidden; border-bottom: 1px solid var(--line); background: #09080b; }
+  .principle-media::after { position: absolute; inset: 0; background: linear-gradient(155deg, transparent 45%, rgb(255 47 146 / 0.12)); content: ""; pointer-events: none; }
+  .principle-media img { width: 100%; height: 100%; min-height: 14rem; object-fit: cover; filter: saturate(0.86) contrast(1.03); transition: filter 500ms ease, transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .principles-grid article:hover .principle-media img { filter: saturate(0.96) contrast(1.04); transform: scale(1.025); }
+  .principles-grid p { margin: 0; padding: var(--space-5); }
   .process-cta { display: grid; grid-template-columns: 2fr 2fr auto; align-items: end; gap: var(--space-5); }
   .process-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); letter-spacing: -0.05em; line-height: 1; }
   .process-cta p { margin: 0; }
-  @media (max-width: 56rem) { .stage-item { grid-template-columns: 3rem 1fr; } .stage-output { grid-column: 2; } .principles-grid { grid-template-columns: 1fr; } .process-cta { grid-template-columns: 1fr 1fr; } .process-cta .button { grid-column: 1 / -1; justify-self: start; } }
-  @media (max-width: 36rem) { .stage-item { grid-template-columns: 1fr; gap: var(--space-2); } .stage-output { grid-column: auto; } .process-cta { grid-template-columns: 1fr; } }
+  @media (max-width: 70rem) { .stage-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stage-item:last-child { grid-column: 1 / -1; } }
+  @media (max-width: 56rem) { .principles-grid { grid-template-columns: 1fr; } .process-cta { grid-template-columns: 1fr 1fr; } .process-cta .button { grid-column: 1 / -1; justify-self: start; } }
+  @media (max-width: 36rem) { .stage-list { grid-template-columns: 1fr; } .stage-item:last-child { grid-column: auto; } .process-cta { grid-template-columns: 1fr; } }
+  @media (max-width: 36rem) {
+    .stage-item > .stage-media,
+    .stage-item > .stage-media img,
+    .stage-item:nth-child(5) > .stage-media,
+    .stage-item:nth-child(5) .stage-media img { min-height: 12rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .stage-media img, .principle-media img { transition: none; } }
 </style>

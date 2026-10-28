@@ -7,13 +7,17 @@ interface TrackDetail { name: EventName; surface: Surface }
 const storageKey = "povkh-consent";
 const eventNames = new Set<EventName>(["cta_click", "case_open", "brief_start", "brief_submit"]);
 const surfaces = new Set<Surface>(["home", "work", "services", "contact"]);
+let sessionConsent: ConsentState | null = null;
 function readConsent(): ConsentState | null {
-  const value = localStorage.getItem(storageKey);
-  return value === "granted" || value === "denied" ? value : null;
+  try {
+    const value = localStorage.getItem(storageKey);
+    return value === "granted" || value === "denied" ? value : sessionConsent;
+  } catch { return sessionConsent; }
 }
 
 function setConsent(state: ConsentState) {
-  localStorage.setItem(storageKey, state);
+  sessionConsent = state;
+  try { localStorage.setItem(storageKey, state); } catch { /* Keep this choice for the current page when storage is unavailable. */ }
   window.dispatchEvent(new CustomEvent("povkh:consent", { detail: state }));
 }
 
@@ -32,6 +36,7 @@ function send(detail: TrackDetail) {
 }
 
 function syncControls(root: HTMLElement) {
+  root.hidden = !document.querySelector<HTMLMetaElement>('meta[name="povkh-analytics-endpoint"]')?.content;
   const state = readConsent();
   root.dataset.state = state ?? "unset";
   const prompt = root.querySelector<HTMLElement>("[data-consent-prompt]");

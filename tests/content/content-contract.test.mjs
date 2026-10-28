@@ -64,8 +64,11 @@ test("EN and RU site authorities declare exact equivalent public routes", async 
   const [en, ru] = await Promise.all([json("site/en.json"), json("site/ru.json")]);
   assert.deepEqual(en.routes, expectedRoutes);
   assert.deepEqual(
-    ru.routes,
-    expectedRoutes.map((route) => (route === "/" ? "/ru/" : `/ru${route}`)),
+    [...ru.routes].sort(),
+    [
+      ...expectedRoutes.map((route) => (route === "/" ? "/ru/" : `/ru${route}`)),
+      "/ru/work/kzms/",
+    ].sort(),
   );
   assert.equal(en.locale, "en");
   assert.equal(ru.locale, "ru");
@@ -93,7 +96,7 @@ test("contact introduction follows the configured delivery mode", async () => {
   }
 });
 
-test("all structured collections have EN and RU parity", async () => {
+test("shared structured collections keep locale parity", async () => {
   for (const collection of ["services", "process", "team", "faq"]) {
     const [en, ru] = await Promise.all([
       json(`${collection}/en.json`),
@@ -106,11 +109,8 @@ test("all structured collections have EN and RU parity", async () => {
     );
   }
 
-  assert.deepEqual(
-    await filenames("work/en/", ".md"),
-    await filenames("work/ru/", ".md"),
-    "work locale parity",
-  );
+  assert.deepEqual(await filenames("work/en/", ".md"), ["endokey.md", "povkh-lab.md"]);
+  assert.deepEqual(await filenames("work/ru/", ".md"), ["endokey.md", "kzms.md", "povkh-lab.md"]);
   assert.deepEqual(
     await filenames("legal/en/", ".md"),
     await filenames("legal/ru/", ".md"),
@@ -137,10 +137,10 @@ test("POVKH LAB is disclosed as founder-led in both locales", async () => {
       "utf8",
     );
     assert.match(source, /^relationship:\s*founder-led$/m);
-    assert.match(source, /^order:\s*2$/m);
-    assert.match(source, /^featured:\s*true$/m);
+    assert.match(source, new RegExp(`^order:\\s*${locale === "ru" ? 3 : 2}$`, "m"));
+    assert.match(source, new RegExp(`^featured:\\s*${locale === "ru" ? "false" : "true"}$`, "m"));
     assert.match(source, /^disclosure:\s*.+$/m);
-    assert.match(source, negativeClientClaim[locale]);
+    if (locale === "en") assert.match(source, negativeClientClaim[locale]);
     assert.match(source, /^rightsStatus:\s*approved$/m);
     assert.match(source, /^liveSite:\s*https:\/\/alessandropovkh\.github\.io\/POVKH-LAB\/$/m);
     assert.doesNotMatch(source, /\/Users\//, `${locale} public case must not expose local paths`);
@@ -149,11 +149,10 @@ test("POVKH LAB is disclosed as founder-led in both locales", async () => {
 
 test("work authority publishes deterministic localized client and founder-led cases", async () => {
   for (const locale of ["en", "ru"]) {
-    assert.deepEqual(await filenames(`work/${locale}/`, ".md"), ["endokey.md", "povkh-lab.md"]);
     const endokey = await readFile(new URL(`work/${locale}/endokey.md`, contentRoot), "utf8");
     assert.match(endokey, /^caseSlug:\s*endokey$/m);
     assert.match(endokey, /^relationship:\s*client$/m);
-    assert.match(endokey, /^order:\s*1$/m);
+    assert.match(endokey, new RegExp(`^order:\\s*${locale === "ru" ? 2 : 1}$`, "m"));
     assert.match(endokey, /^featured:\s*true$/m);
     assert.match(endokey, /^rightsStatus:\s*approved$/m);
     assert.match(endokey, /^liveSite:\s*https:\/\/endokey\.ru\/$/m);
@@ -165,6 +164,34 @@ test("work authority publishes deterministic localized client and founder-led ca
   }
 });
 
+test("Russian authority leads with the approved task-shaped website offer and real proof", async () => {
+  const [site, kzms, endokey, lab] = await Promise.all([
+    json("site/ru.json"),
+    readFile(new URL("work/ru/kzms.md", contentRoot), "utf8"),
+    readFile(new URL("work/ru/endokey.md", contentRoot), "utf8"),
+    readFile(new URL("work/ru/povkh-lab.md", contentRoot), "utf8"),
+  ]);
+  assert.equal(site.hero.title, "Создаём сайты с характером.");
+  assert.match(site.hero.lead, /бизнеса, предпринимателей и авторских проектов/i);
+  assert.equal(site.hero.primaryCta, "Разобрать задачу");
+  assert.equal(site.finalCta.action, site.hero.primaryCta);
+  assert.match(kzms, /^caseSlug:\s*kzms$/m);
+  assert.match(kzms, /^order:\s*1$/m);
+  assert.match(kzms, /^featured:\s*true$/m);
+  assert.match(kzms, /^liveSite:\s*https:\/\/rosset-kzms\.ru\/catalog-preview-v5\/$/m);
+  assert.match(kzms, /Переработка каталога промышленных сеток КЗМС/);
+  assert.match(kzms, /400 карточек непрофильных товаров/);
+  assert.match(kzms, /вёдра, болты, шурупы/);
+  assert.match(endokey, /^order:\s*2$/m);
+  assert.match(endokey, /^featured:\s*true$/m);
+  assert.match(endokey, /^title:\s*Бренд и сайт эндодонтического продукта$/m);
+  assert.match(lab, /^order:\s*3$/m);
+  assert.match(lab, /^featured:\s*false$/m);
+  const publicKzmsCopy = kzms.replace(/^liveSite:\s*.+$/m, "");
+  assert.doesNotMatch(publicKzmsCopy, /предварительн|превью|preview|пакет|ворктри|локальн/iu);
+  assert.equal(hasUnsupportedOutcomeClaim(kzms), false);
+});
+
 test("demo publishes the two approved founder names without inventing profiles", async () => {
   for (const locale of ["en", "ru"]) {
     const team = await json(`team/${locale}.json`);
@@ -174,6 +201,26 @@ test("demo publishes the two approved founder names without inventing profiles",
     ]);
     assert.equal(team.productionReady, false);
   }
+});
+
+test("public team copy removes the legacy two-person claim and keeps new experience bounded", async () => {
+  const sourceRefs = [
+    "../../src/pages/index.astro",
+    "../../src/pages/studio.astro",
+    "../../src/pages/ru/studio.astro",
+    "../../src/content/team/en.json",
+    "../../src/content/team/ru.json",
+  ];
+  const sources = await Promise.all(sourceRefs.map((ref) => readFile(new URL(ref, import.meta.url), "utf8")));
+  const joined = sources.join("\n");
+  assert.doesNotMatch(joined, /two-person|two people|два человека|двух человек/iu);
+
+  const ruStudio = sources[2];
+  for (const role of ["SEO-специалист", "Дизайнеры ×2", "Продуктовый менеджер", "UX/UI-дизайнер", "Веб-дизайнер", "Frontend-разработчики"]) {
+    assert.match(ruStudio, new RegExp(role.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "u"));
+  }
+  for (const company of ["Яндексе", "Магните", "Burger King", "Adrenaline Rush"]) assert.match(ruStudio, new RegExp(company, "u"));
+  assert.doesNotMatch(ruStudio, /клиент(?:ы|ами)?\s+(?:Яндекс|Магнит|Burger King|Adrenaline Rush)/iu);
 });
 
 test("GitHub Pages publishes the static preview artifact", async () => {
@@ -240,4 +287,48 @@ test("production authority gates reject current pending records and accept compl
   };
   assert.equal(founderAuthorityApproved({ productionReady: true, items: [completeFounder, completeFounder] }), true);
   assert.equal(workRightsApproved({ rightsStatus: "approved" }), true);
+});
+
+test("light editorial system keeps the approved mark and uses real website proof in the hero", async () => {
+  const [header, mark, glyph, homepage, hero, interior, referenceEditorial, complexCase, seoHead, favicon, endokeyHero] = await Promise.all([
+    readFile(new URL("../../src/components/Header.astro", import.meta.url), "utf8"),
+    readFile(new URL("../../src/components/BrandMark.astro", import.meta.url), "utf8"),
+    readFile(new URL("../../src/components/home/GlyphField.astro", import.meta.url), "utf8"),
+    readFile(new URL("../../src/pages/ru/index.astro", import.meta.url), "utf8"),
+    readFile(new URL("../../src/lib/studio-hero.ts", import.meta.url), "utf8"),
+    readFile(new URL("../../src/styles/editorial-interior.css", import.meta.url), "utf8"),
+    readFile(new URL("../../src/styles/reference-editorial.css", import.meta.url), "utf8"),
+    readFile(new URL("../../src/components/work/ComplexProductCase.astro", import.meta.url), "utf8"),
+    readFile(new URL("../../src/components/SeoHead.astro", import.meta.url), "utf8"),
+    readFile(new URL("../../public/favicon.svg", import.meta.url), "utf8"),
+    readFile(new URL("../../public/assets/work/endokey/site-home.jpg", import.meta.url)),
+  ]);
+  assert.match(header, /<BrandMark/);
+  assert.match(mark, /data-brand-mark/);
+  assert.equal((mark.match(/data-signal-stroke/g) ?? []).length, 3);
+  assert.match(glyph, /<canvas/);
+  assert.match(glyph, /tabindex="0"/);
+  assert.match(glyph, /pointerdown/);
+  assert.match(glyph, /keydown/);
+  assert.match(glyph, /prefers-reduced-motion/);
+  assert.match(glyph, /reducedMotion\.matches/);
+  assert.doesNotMatch(glyph, /FIELD DEPTH|\bLOCK\b|\bglow\b/iu);
+  assert.match(hero, /class="site-atlas"/);
+  assert.match(hero, /atlas-kzms\.webp/);
+  assert.match(hero, /atlas-endokey\.webp/);
+  assert.match(hero, /atlas-povkh-lab\.webp/);
+  assert.match(homepage, /data-home-hero-media/);
+  assert.ok(endokeyHero.byteLength > 100_000);
+  assert.match(homepage, /@media \(max-width: 640px\)[\s\S]*\[data-section\][^}]*content-visibility:\s*visible/);
+  assert.match(interior, /--povkh-pink:\s*#ff2f92/);
+  assert.match(interior, /--paper:\s*#f4efe8/);
+  assert.match(referenceEditorial, /--ref-blush:\s*#f3d1dc/);
+  assert.match(referenceEditorial, /--ref-display:/);
+  assert.match(interior, /\.editorial-interior \.case-list-item \.case-preview[^}]*#f7d3dd/s);
+  assert.match(interior, /\.editorial-interior \.brief-shell-ru[^}]*background:\s*#171518\s*!important/s);
+  assert.match(interior, /\.editorial-interior \.brief-shell-ru :where\(input, textarea, select\)[^}]*background:\s*#faf5ef\s*!important/s);
+  assert.match(complexCase, /\.related-case\s*\{/);
+  assert.match(seoHead, /locale === "ru" \? "#f4efe8"/);
+  assert.match(favicon, /data-brand-mark/);
+  assert.match(favicon, /#ff2f92/);
 });

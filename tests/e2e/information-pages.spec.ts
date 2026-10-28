@@ -51,6 +51,7 @@ for (const blog of blogCases) {
     await expect(page.getByRole("heading", { level: 1, name: blog.heading })).toBeVisible();
     await expect(page.locator(`[data-primary-links] a[href="${blog.path}"]`)).toHaveAttribute("aria-current", "page");
     await expect(page.locator("[data-blog-note]")).toHaveCount(3);
+    if (blog.locale === "ru") await expect(page.locator('[data-editorial-image="blog"]')).toBeVisible();
   });
 }
 
@@ -65,7 +66,8 @@ for (const pageCase of localizedCases) {
     await expect(page.getByText(/Discovery|Исследование/).first()).toBeVisible();
     await expect(page.getByText(/Evolution|Развитие/).first()).toBeVisible();
     await expect(page.getByText(/not included automatically|не включаются автоматически/i).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|Обсудить (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
+    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|(?:Обсудить|Разобрать) (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
+    if (pageCase.locale === "ru") await expect(page.locator('[data-editorial-image="service"]')).toHaveCount(3);
   });
 
   test(`${pageCase.locale} process exposes five stage outputs`, async ({ page }) => {
@@ -75,17 +77,22 @@ for (const pageCase of localizedCases) {
       await expect(page.getByText(output, { exact: false })).toBeVisible();
     }
     await expect(page.locator("ol").getByRole("listitem")).toHaveCount(5);
-    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|Обсудить (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
+    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|(?:Обсудить|Разобрать) (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
   });
 
-  test(`${pageCase.locale} studio publishes approved names without invented profiles`, async ({ page }) => {
+  test(`${pageCase.locale} studio publishes bounded team information`, async ({ page }) => {
     await page.goto(pageCase.studio);
     await expect(page.getByRole("heading", { level: 1, name: pageCase.studioHeading })).toBeVisible();
-    await expect(page.getByText(/two-person studio|двух человек/i).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Alessandro Povkh" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Egor Vereshagin" })).toBeVisible();
-    await expect(page.getByText(/profiles will be added|профили будут дополнены|публичные профили появятся/i).first()).toBeVisible();
-    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|Обсудить (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
+    await expect(page.locator("main")).not.toContainText(/two-person studio|two people|два человека|двух человек/i);
+    if (pageCase.locale === "ru") {
+      await expect(page.locator('[data-editorial-image="studio"]')).toBeVisible();
+      await expect(page.locator("[data-team-role]")).toHaveCount(6);
+      await expect(page.getByText(/Яндексе, Магните, Burger King и Adrenaline Rush/)).toBeVisible();
+    } else {
+      await expect(page.getByRole("heading", { name: "Alessandro Povkh" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Egor Vereshagin" })).toBeVisible();
+    }
+    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|(?:Обсудить|Разобрать) (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
   });
 
   test(`${pageCase.locale} information pages reflow long content without horizontal scroll`, async ({ page }) => {
@@ -107,6 +114,6 @@ for (const pageCase of localizedCases) {
     await expect(page.getByRole("heading", { level: 1, name: pageCase.notFoundHeading })).toBeVisible();
     await expect(page.getByRole("link", { name: /home|главн/i }).first()).toHaveAttribute("href", pageCase.home);
     await expect(page.getByRole("link", { name: /services|услуг/i }).first()).toHaveAttribute("href", pageCase.services);
-    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|Обсудить (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
+    await expect(page.getByRole("link", { name: /Discuss (?:your |a )?project|(?:Обсудить|Разобрать) (?:задачу|проект)/i }).first()).toHaveAttribute("href", pageCase.contact);
   });
 }

@@ -12,9 +12,9 @@ scope:
   - Доступность и проверка качества
 featuredScope: Бренд-система · Многоязычный digital
 relationship: founder-led
-order: 2
-featured: true
-disclosure: POVKH LAB — проект основателей, а не внешний клиентский контракт.
+order: 3
+featured: false
+disclosure: Собственный проект основателей Povkh.Dev.
 evidenceDate: 2026-08-14
 sourceRoot: https://github.com/AlessandroPovkh/POVKH-LAB
 publicSource: Исходный проект POVKH LAB и датированная документация о проверке качества

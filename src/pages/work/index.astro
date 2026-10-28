@@ -6,14 +6,17 @@ import { getLocalizedWork } from "../../lib/content";
 
 const locale = "en" as const;
 const cases = await getLocalizedWork(locale);
+const caseMedia = {
+  endokey: { src: "/assets/work/endokey/site-home.jpg", alt: "ENDOkey website homepage" },
+  "povkh-lab": { src: "/assets/work/povkh-lab/home-en-desktop.webp", alt: "POVKH LAB homepage" },
+} as const;
 ---
 
 <BaseLayout locale={locale} currentPath="/work/" title="Work — Povkh.Dev" description="Selected client and founder-led work by Povkh.Dev.">
   <div class="work-index container">
-    <header class="work-index-hero">
-      <p class="eyebrow">Selected work / 02</p>
-      <h1>Built to make the next step clear.</h1>
-      <p class="lede">Brand and website work for products and independent ventures.</p>
+    <header class="work-index-hero inner-hero-layout">
+      <div class="inner-hero-copy"><p class="eyebrow">Selected work / 02</p><h1>Built to make the next step clear.</h1><p class="lede">Brand and website work for products and independent ventures.</p></div>
+      <figure class="editorial-hero-media"><img src="/assets/work/endokey/site-home.jpg" alt="Selected Povkh.Dev website work" width="1440" height="960" decoding="async" fetchpriority="high" /></figure>
     </header>
 
     <section aria-labelledby="case-list-title">
@@ -22,7 +25,9 @@ const cases = await getLocalizedWork(locale);
         <h2 id="case-list-title">From positioning to a working website.</h2>
       </div>
       <div class="case-list">
-        {cases.map((caseStudy) => (
+        {cases.map((caseStudy) => {
+          const media = caseMedia[caseStudy.data.caseSlug as keyof typeof caseMedia];
+          return (
           <div class="case-list-item">
             <CasePreview
               title={caseStudy.data.title}
@@ -31,6 +36,9 @@ const cases = await getLocalizedWork(locale);
               href={`/work/${caseStudy.data.caseSlug}/`}
               action="Read the case"
               accessibleAction={`Read the ${caseStudy.data.title} case`}
+              mediaSrc={media.src}
+              mediaAlt={media.alt}
+              mediaVariant={caseStudy.data.caseSlug}
             />
             <CaseEvidence
               label={caseStudy.data.relationship === "client" ? "Client work" : "Founder-led project"}
@@ -39,7 +47,8 @@ const cases = await getLocalizedWork(locale);
               text={caseStudy.data.disclosure}
             />
           </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   </div>

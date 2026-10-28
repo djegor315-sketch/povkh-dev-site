@@ -8,12 +8,24 @@ const prefix = locale === "ru" ? "/ru" : "";
 
 <footer class="site-footer">
   <div class="footer-inner container">
-    <p class="footer-mark">POVKH.DEV</p>
+    <div class="footer-identity">
+      <p class="footer-kicker">{locale === "ru" ? "Независимая цифровая студия" : "Independent digital studio"}</p>
+      <p class="footer-mark">POVKH<span>.</span>DEV</p>
+    </div>
     <ul class="footer-links">
+      <li><a href={`${prefix}/work/`}>{locale === "ru" ? "Работы" : "Work"}</a></li>
+      <li><a href={`${prefix}/services/`}>{locale === "ru" ? "Услуги" : "Services"}</a></li>
+      <li><a href={`${prefix}/process/`}>{locale === "ru" ? "Процесс" : "Process"}</a></li>
+      <li><a href={`${prefix}/studio/`}>{locale === "ru" ? "Студия" : "Studio"}</a></li>
+      <li><a href={`${prefix}/blog/`}>{locale === "ru" ? "Блог" : "Blog"}</a></li>
+      <li><a href={`${prefix}/contact/`}>{locale === "ru" ? "Контакт" : "Contact"}</a></li>
       <li><a href={`${prefix}/privacy/`}>{locale === "ru" ? "Конфиденциальность" : "Privacy"}</a></li>
       <li><a href={`${prefix}/cookies/`}>{locale === "ru" ? "Файлы cookie" : "Cookies"}</a></li>
     </ul>
-    <p class="metadata">{locale === "ru" ? "Бренд × Сайт × Интеграции" : "Brand × Web × Connect"}</p>
-    <p class="metadata">© {new Date().getFullYear()} Povkh.Dev</p>
+    <div class="footer-coordinates">
+      <p class="metadata">Brescia&nbsp;&nbsp;45°32′ N&nbsp;&nbsp;10°13′ E</p>
+      <p class="metadata">{locale === "ru" ? "Бренд × Сайт × Интеграции" : "Brand × Web × Connect"}</p>
+      <p class="metadata">© {new Date().getFullYear()} Povkh.Dev</p>
+    </div>
   </div>
 </footer>

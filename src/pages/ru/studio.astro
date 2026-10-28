@@ -7,44 +7,66 @@ const currentPath = "/ru/studio/";
 const site = await getSite(locale);
 const team = await getTeam(locale);
 const faq = await getFaq(locale);
+const roles = [
+  ["01", "Продуктовый менеджер", "Держит цель, приоритеты и решения проекта в одной логике."],
+  ["02", "SEO-специалист", "Связывает структуру сайта, спрос и техническую основу поиска."],
+  ["03", "UX/UI-дизайнер", "Проектирует сценарии, интерфейс и значимые состояния продукта."],
+  ["04", "Веб-дизайнер", "Собирает выразительную систему страниц и адаптивную композицию."],
+  ["05", "Дизайнеры ×2", "Развивают айдентику, графику и материалы для запуска."],
+  ["06", "Frontend-разработчики", "Превращают дизайн в быструю, устойчивую и проверяемую сборку."],
+];
+const collaboration = [
+  ["01", "Работа напрямую.", "Стратегия, дизайн, SEO и разработка остаются рядом с задачей: меньше передач и понятнее решения."],
+  ["02", "Состав под результат.", "Роли подключаются там, где они действительно нужны, а Povkh.Dev сохраняет одну точку ответственности."],
+  ["03", "Доказательства вместо декора.", "Сайт и реальные кейсы показывают системы, которые мы умеем объяснять, тестировать и передавать."],
+];
 ---
 
 <BaseLayout
   locale={locale}
   currentPath={currentPath}
   title={`Студия — ${site.meta.title}`}
-  description="Независимая студия Povkh.Dev из двух человек: ответственность остаётся рядом с работой."
+  description="Независимая продуктовая веб-студия Povkh.Dev: стратегия, дизайн, SEO и frontend в одной ответственной команде."
 >
   <div class="studio-page">
-    <section class="studio-hero container" aria-labelledby="studio-title">
-      <p class="eyebrow">03 / Люди и ответственность</p>
-      <h1 id="studio-title">Студия</h1>
-      <p class="studio-lede">{team.intro}</p>
+    <section class="studio-hero inner-hero-layout container" aria-labelledby="studio-title">
+      <div class="inner-hero-copy">
+        <p class="eyebrow">03 / Люди и ответственность</p>
+        <h1 id="studio-title">Студия</h1>
+        <p class="studio-lede">{team.intro}</p>
+      </div>
+      <figure class="studio-hero-media" data-editorial-image="studio" aria-hidden="true">
+        <img src="/assets/editorial/studio-team.webp" alt="" width="1536" height="1024" decoding="async" fetchpriority="high" />
+      </figure>
     </section>
 
     <section class="studio-gate container" aria-labelledby="people-title">
       <header class="section-heading">
-        <p class="eyebrow">Реальная команда, не сборный профиль</p>
-        <h2 id="people-title">Два человека. Одна ответственная система.</h2>
+        <p class="eyebrow">Команда под задачу</p>
+        <h2 id="people-title">Разные специалисты. Одна ответственная система.</h2>
       </header>
-      <p class="studio-gate-copy">В постоянной команде — два человека. Публичные профили появятся после утверждения ролей, биографий, портретов и ссылок.</p>
-      <div class="founder-records" aria-label="Записи об основателях">
-        {team.items.map((founder, index) => (
-          <article class="founder-record" data-testid="founder-record">
-            <p class="metadata">Запись основателя 0{index + 1}</p>
-            <h3>{founder.publicName}</h3>
-            <p>Детали профиля основателя будут опубликованы после личного подтверждения.</p>
+      <p class="studio-gate-copy">Внутри команды есть продуктовая, поисковая, визуальная и техническая экспертиза. Состав собирается под задачу, но решения и коммуникация не распадаются между подрядчиками.</p>
+      <div class="role-grid" aria-label="Состав команды">
+        {roles.map(([number, title, description]) => (
+          <article class="role-card" data-team-role>
+            <p class="metadata">{number} / роль</p>
+            <h3>{title}</h3>
+            <p>{description}</p>
           </article>
         ))}
       </div>
+      <aside class="experience-band" aria-label="Опыт команды">
+        <p class="eyebrow">Опыт внутри команды</p>
+        <p>В команде есть опыт работы в <strong>Яндексе</strong>, <strong>Магните</strong>, <strong>Burger King</strong> и <strong>Adrenaline Rush</strong>.</p>
+      </aside>
     </section>
 
     <section class="collaboration-section container" aria-labelledby="collaboration-title">
       <h2 id="collaboration-title">Близость — часть метода.</h2>
       <div class="collaboration-grid">
-        <p><strong>Работа напрямую.</strong><br />Стратегия, дизайн и разработка остаются рядом с теми, кто выполняет работу: меньше передач и понятнее решения.</p>
-        <p><strong>Профильные специалисты — по задаче.</strong><br />Если проекту нужен специалист вне постоянной команды, мы подключаем его под согласованную задачу, сохраняя одну точку ответственности внутри Povkh.Dev.</p>
-        <p><strong>Доказательства вместо декора.</strong><br />Наш сайт и кейс проекта основателей POVKH LAB показывают системы, которые мы умеем объяснять, тестировать и передавать.</p>
+        {collaboration.map(([number, title, description]) => (
+          <article><span class="metadata">{number}</span><p><strong>{title}</strong><br />{description}</p></article>
+        ))}
       </div>
     </section>
 
@@ -70,23 +92,39 @@ const faq = await getFaq(locale);
   .studio-hero { padding-block: clamp(4rem, 10vw, 9rem) var(--space-8); }
   .studio-hero h1 { margin-block: var(--space-4) var(--space-5); font-family: var(--font-display); font-size: clamp(3rem, 9vw, 7rem); letter-spacing: -0.07em; line-height: 0.95; }
   .studio-lede { max-width: 46rem; font-size: clamp(1.25rem, 2.3vw, 2rem); line-height: 1.25; }
+  .studio-hero-media { position: relative; min-height: clamp(24rem, 52vw, 43rem); margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: clamp(1.2rem, 2.4vw, 2rem); background: #09080b; box-shadow: 0 1.5rem 5rem rgb(34 5 23 / 0.24); }
+  .studio-hero-media::after { position: absolute; inset: 0; background: linear-gradient(145deg, rgb(8 7 10 / 0.04), transparent 55%, rgb(255 47 146 / 0.1)); content: ""; pointer-events: none; }
+  .studio-hero-media img { width: 100%; height: 100%; min-height: inherit; object-fit: cover; object-position: center; filter: saturate(0.88) contrast(1.03); }
   .studio-gate, .collaboration-section, .faq-section, .studio-cta { padding-block: var(--space-8); border-top: 1px solid var(--ink); }
   .section-heading { margin-block-end: var(--space-6); }
   .section-heading h2 { max-width: 20ch; margin-block: var(--space-3) 0; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.5rem); letter-spacing: -0.06em; line-height: 1; }
   .studio-gate-copy { max-width: 46rem; font-size: 1.2rem; }
-  .founder-records { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--ink); background: var(--ink); }
-  .founder-record { padding: var(--space-5); background: var(--paper); }
-  .founder-record h3 { margin-block: var(--space-3); font-family: var(--font-display); font-size: clamp(1.25rem, 2.5vw, 2rem); letter-spacing: -0.05em; line-height: 1.1; }
+  .role-grid { display: grid; margin-block-start: var(--space-7); grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--line); }
+  .role-card { min-width: 0; padding: var(--space-5); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: linear-gradient(145deg, rgb(19 13 18 / 0.88), rgb(8 8 10 / 0.78)); }
+  .role-card:nth-child(3n) { border-right: 0; }
+  .role-card:nth-last-child(-n + 3) { border-bottom: 0; }
+  .role-card h3 { margin-block: var(--space-4) var(--space-3); font-family: var(--font-display); font-size: clamp(1.3rem, 2.5vw, 2rem); letter-spacing: -0.05em; line-height: 1.05; }
+  .role-card > p:last-child { margin: 0; color: var(--muted); }
+  .experience-band { display: grid; margin-block-start: var(--space-7); padding: var(--space-6); border: 1px solid rgb(255 47 146 / 0.32); border-radius: 1rem; grid-template-columns: minmax(10rem, 1fr) minmax(0, 3fr); gap: var(--space-5); background: linear-gradient(105deg, rgb(255 47 146 / 0.12), rgb(12 9 13 / 0.76) 52%); }
+  .experience-band p { margin: 0; }
+  .experience-band > p:last-child { font-size: clamp(1.25rem, 2.4vw, 2rem); line-height: 1.25; }
   .collaboration-section h2, .faq-section h2 { margin-block: 0 var(--space-6); font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.5rem); letter-spacing: -0.06em; line-height: 1; }
   .collaboration-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
-  .collaboration-grid p { margin: 0; padding-block-start: var(--space-4); border-top: 2px solid var(--warm-coral); }
-  .faq-list { border-top: 1px solid var(--line); }
-  .faq-list details { padding-block: var(--space-4); border-bottom: 1px solid var(--line); }
-  .faq-list summary { cursor: pointer; font-size: 1.2rem; font-weight: 700; }
-  .faq-list p { max-width: 48rem; margin: var(--space-3) 0 0; }
+  .collaboration-grid article { display: grid; min-width: 0; padding: var(--space-5); border: 1px solid var(--line); border-radius: 0.8rem; grid-template-rows: auto 1fr; background: rgb(10 9 12 / 0.82); }
+  .collaboration-grid p { margin: var(--space-7) 0 0; }
+  .faq-list { display: grid; gap: 0.75rem; }
+  .faq-list details { overflow: hidden; border: 1px solid var(--line); border-radius: 0.8rem; background: rgb(10 9 12 / 0.76); }
+  .faq-list summary { position: relative; padding: var(--space-5) 4.5rem var(--space-5) var(--space-5); cursor: pointer; font-size: 1.2rem; font-weight: 700; list-style: none; }
+  .faq-list summary::-webkit-details-marker { display: none; }
+  .faq-list summary::after { position: absolute; top: 50%; right: var(--space-5); width: 1rem; height: 1rem; border-right: 2px solid var(--povkh-pink); border-bottom: 2px solid var(--povkh-pink); content: ""; transform: translateY(-70%) rotate(45deg); transition: transform 180ms ease; }
+  .faq-list details[open] summary::after { transform: translateY(-30%) rotate(225deg); }
+  .faq-list details[open] summary { color: var(--povkh-pink); }
+  .faq-list p { max-width: 48rem; margin: 0; padding: 0 var(--space-5) var(--space-5); }
   .studio-cta { display: grid; grid-template-columns: 2fr 2fr auto; align-items: end; gap: var(--space-5); }
   .studio-cta h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); letter-spacing: -0.05em; line-height: 1; }
   .studio-cta p { margin: 0; }
-  @media (max-width: 56rem) { .founder-records, .collaboration-grid { grid-template-columns: 1fr; } .studio-cta { grid-template-columns: 1fr 1fr; } .studio-cta .button { grid-column: 1 / -1; justify-self: start; } }
+  @media (max-width: 64rem) { .role-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .role-card:nth-child(3n) { border-right: 1px solid var(--line); } .role-card:nth-child(2n) { border-right: 0; } .role-card:nth-last-child(-n + 3) { border-bottom: 1px solid var(--line); } .role-card:nth-last-child(-n + 2) { border-bottom: 0; } }
+  @media (max-width: 56rem) { .collaboration-grid { grid-template-columns: 1fr; } .studio-cta { grid-template-columns: 1fr 1fr; } .studio-cta .button { grid-column: 1 / -1; justify-self: start; } .experience-band { grid-template-columns: 1fr; } }
+  @media (max-width: 42rem) { .role-grid { grid-template-columns: 1fr; } .role-card, .role-card:nth-child(2n), .role-card:nth-child(3n) { border-right: 0; border-bottom: 1px solid var(--line); } .role-card:last-child { border-bottom: 0; } .studio-hero-media { min-height: 18rem; } }
   @media (max-width: 36rem) { .studio-cta { grid-template-columns: 1fr; } }
 </style>

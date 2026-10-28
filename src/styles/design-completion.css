@@ -1,0 +1,324 @@
+/* Refine the approved paper/pastel system using bundled, consistent Cyrillic type. */
+body.design-completion {
+  --ref-display: var(--font-body);
+  --reading-progress: 0;
+}
+
+.design-completion .reading-progress {
+  position: fixed;
+  z-index: 120;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--ref-pink);
+  transform: scaleX(var(--reading-progress));
+  transform-origin: left;
+  pointer-events: none;
+}
+
+.design-completion :where(a, button, summary, input, textarea, select):focus-visible {
+  outline: 3px solid var(--ref-pink-ink);
+  outline-offset: 5px;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero {
+  display: grid;
+  min-height: min(54rem, calc(100svh - 56px));
+  padding: 0;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
+  align-items: stretch;
+  background: var(--ref-paper);
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero .hero-copy {
+  display: flex;
+  min-width: 0;
+  min-height: 39rem;
+  padding: clamp(2rem, 4.5vw, 5rem);
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3rem;
+  background: var(--ref-blush);
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero h1 {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  color: var(--ref-ink);
+  font-family: var(--font-body);
+  font-size: clamp(3rem, 5.5vw, 6.75rem);
+  font-weight: 600;
+  letter-spacing: -0.075em;
+  line-height: 0.99;
+  text-transform: none;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  transform: none;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero h1 span {
+  display: block;
+  color: inherit;
+  font: inherit;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero .hero-bottom {
+  display: flex;
+  width: 100%;
+  max-width: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.75rem;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero .hero-lead {
+  max-width: 37ch;
+  margin: 0;
+  color: #39343a;
+  font: 400 clamp(1rem, 1.35vw, 1.25rem)/1.55 var(--font-body);
+}
+
+.design-completion #hero .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero .hero-primary {
+  display: inline-flex;
+  min-height: 3.5rem;
+  padding: 0.7rem 1.1rem 0.7rem 1.25rem !important;
+  border: 1px solid var(--ref-ink) !important;
+  border-radius: 3px !important;
+  gap: 1.5rem;
+  color: #fff !important;
+  background: var(--ref-ink) !important;
+  font: 550 0.95rem/1.25 var(--font-body);
+  transition: background-color 140ms ease-out, transform 140ms ease-out;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero .hero-primary::after { display: none; }
+.design-completion #hero .hero-primary span { font-size: 1.35rem; transition: transform 140ms ease-out; }
+.design-completion #hero .hero-primary:hover span { transform: translate(2px, -2px); }
+.design-completion #hero .hero-primary:active { transform: translateY(1px); }
+.design-completion #hero .hero-secondary {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--ref-ink);
+  font: 500 0.9rem/1.3 var(--font-body);
+  text-decoration: underline;
+  text-decoration-color: rgb(20 19 22 / 0.35);
+  text-underline-offset: 0.3em;
+}
+.design-completion #hero .hero-disciplines {
+  margin: 0;
+  color: #5c4652;
+  font: 400 0.66rem/1.5 var(--font-mono);
+  letter-spacing: 0.025em;
+}
+
+.design-completion.reference-editorial.editorial-homepage #hero .hero-art {
+  min-width: 0;
+  min-height: 39rem;
+  overflow: clip;
+  border-left: 1px solid rgb(20 19 22 / 0.16);
+  background: var(--ref-blue);
+}
+.design-completion #hero .site-atlas { width: 100%; height: 100%; min-height: 39rem; background-image: none; }
+.design-completion #hero .atlas-kicker {
+  display: flex;
+  inset: 2.2rem 2.2rem auto;
+  justify-content: space-between;
+  font: 400 0.65rem/1.5 var(--font-mono);
+  letter-spacing: 0.045em;
+}
+.design-completion #hero .atlas-kicker span { opacity: 0.65; }
+.design-completion #hero .atlas-range {
+  right: 2rem;
+  bottom: 1.6rem;
+  color: #3e535d;
+  font: 400 0.7rem/1.5 var(--font-body);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.design-completion #hero .atlas-shot {
+  border-color: rgb(20 19 22 / 0.35);
+  box-shadow: 0 18px 38px -22px rgb(20 19 22 / 0.55);
+  transition: transform 220ms ease-out, box-shadow 220ms ease-out;
+}
+.design-completion #hero .atlas-shot > span { min-height: 28px; font-size: 0.57rem; }
+.design-completion #hero .atlas-kzms { top: 15%; left: 7%; width: 72%; height: 40%; }
+.design-completion #hero .atlas-endokey { top: 38%; right: 5%; width: 65%; height: 39%; }
+.design-completion #hero .atlas-lab { bottom: 10%; left: 8%; width: 49%; height: 31%; }
+@media (hover: hover) and (pointer: fine) {
+  .design-completion #hero .atlas-shot:hover { z-index: 8; transform: translateY(-8px) rotate(0); box-shadow: 0 26px 44px -20px rgb(20 19 22 / 0.5); }
+}
+.design-completion #hero .atlas-shot:focus-visible { z-index: 8; transform: rotate(0); }
+
+/* Keep long-page hierarchy comfortable rather than squeezing headings into columns. */
+.design-completion.reference-editorial.editorial-homepage :is(.section-head h2, .final h2) {
+  max-width: 16ch;
+  font-family: var(--font-body);
+  font-size: clamp(2.5rem, 4.5vw, 5rem);
+  font-weight: 550;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  text-transform: none;
+  overflow-wrap: normal;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .section-head h2 {
+  max-width: 100%;
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 3vw, 3.5rem);
+  font-weight: 550;
+  line-height: 1.03;
+  letter-spacing: -0.05em;
+  text-transform: none;
+  overflow-wrap: normal;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problem h3,
+.design-completion.reference-editorial.editorial-homepage .result-item h3 {
+  max-width: none;
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 2.5vw, 2.65rem);
+  font-weight: 550;
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  text-transform: none;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problem p {
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  line-height: 1.55;
+}
+.design-completion.reference-editorial.editorial-homepage .final { gap: clamp(2rem, 6vw, 6rem); }
+.design-completion.reference-editorial.editorial-homepage .final h2 { max-width: 13ch; margin-block: 1rem 2rem; }
+.design-completion.reference-editorial.editorial-homepage .final .brief-console { align-self: center; }
+.design-completion.reference-editorial main .inner-hero-copy h1,
+.design-completion.reference-editorial main :where(.contact-page > header, .case-intro, .endokey-intro, .not-found) h1 {
+  max-width: 17ch;
+  font-family: var(--font-body);
+  font-size: clamp(2.1rem, 5vw, 5.5rem);
+  font-weight: 550;
+  letter-spacing: -0.06em;
+  line-height: 1.04;
+  text-transform: none;
+}
+
+.design-completion.reference-editorial .footer-inner > * { min-width: 0; }
+.design-completion.reference-editorial .footer-identity { container-type: inline-size; }
+.design-completion.reference-editorial .footer-mark {
+  font-size: clamp(2rem, 18cqw, 9rem);
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+/* Four readable task cards retain their own interactive illustration. */
+.design-completion.reference-editorial.editorial-homepage #problems {
+  display: block;
+  min-height: 0;
+  padding: clamp(2rem, 4vw, 4rem) !important;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .section-head {
+  min-height: 0;
+  padding: 0 0 2.5rem;
+  gap: 1rem;
+  background: transparent;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problems {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  gap: 0;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problem:nth-child(n) {
+  min-height: 29rem;
+  grid-column: auto;
+  grid-row: auto;
+  grid-template-rows: 11rem 1fr;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problem:nth-child(n) .problem-visual {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 11rem;
+  opacity: 1;
+  background-image: none;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problem:first-child { background: var(--ref-blue); }
+.design-completion.reference-editorial.editorial-homepage #problems .problem:first-child .problem-visual > * { display: block; }
+.design-completion.reference-editorial.editorial-homepage #problems .term-cloud span {
+  color: #39343a;
+  border-color: rgb(20 19 22 / 0.22);
+}
+.design-completion.reference-editorial.editorial-homepage #problems .term-cloud strong {
+  right: 4%;
+  left: auto;
+  width: 40%;
+  color: var(--ref-ink);
+  font: 500 clamp(1.125rem, 1.6vw, 1.5rem)/1.1 var(--font-body);
+  letter-spacing: -0.04em;
+  white-space: normal;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .route-map .route { stroke: #81724e; }
+.design-completion.reference-editorial.editorial-homepage #problems .radar-rings { stroke: #ac577c; }
+.design-completion.reference-editorial.editorial-homepage #problems .problem:nth-child(n) .problem-body {
+  min-width: 0;
+  padding: 1.5rem;
+  justify-content: flex-start;
+  background: transparent;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .problem h3 { font-size: clamp(1.4rem, 1.9vw, 2rem); }
+.design-completion.reference-editorial.editorial-homepage #problems .signal-strip {
+  min-height: 10rem;
+  padding: 2rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 2rem;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .signal-strip h3 {
+  max-width: 16ch;
+  font: 550 clamp(1.8rem, 3vw, 3rem)/1.05 var(--font-body);
+  letter-spacing: -0.045em;
+  text-transform: none;
+}
+.design-completion.reference-editorial.editorial-homepage #problems .signal-track { width: 45%; }
+
+@media (max-width: 1100px) {
+  .design-completion.reference-editorial.editorial-homepage #problems .problems { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .design-completion.reference-editorial.editorial-homepage #problems .problem:nth-child(n) { min-height: 25rem; }
+}
+
+@media (max-width: 900px) {
+  .design-completion.reference-editorial.editorial-homepage #hero { grid-template-columns: 1fr; min-height: 0; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-copy { min-height: 36rem; padding: 3rem 2rem; }
+  .design-completion.reference-editorial.editorial-homepage #hero h1 { font-size: clamp(3rem, 8.7vw, 5.5rem); max-width: 16ch; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-art { min-height: 35rem; border-left: 0; }
+  .design-completion #hero .site-atlas { min-height: 35rem; }
+}
+@media (max-width: 640px) {
+  .design-completion.reference-editorial.editorial-homepage #problems { padding: 2.5rem 1.25rem !important; }
+  .design-completion.reference-editorial.editorial-homepage #problems .problems { grid-template-columns: minmax(0, 1fr); }
+  .design-completion.reference-editorial.editorial-homepage #problems .problem h3 { font-size: 1.65rem; }
+  .design-completion.reference-editorial.editorial-homepage #problems .signal-strip { flex-direction: column; align-items: flex-start; }
+  .design-completion.reference-editorial.editorial-homepage #problems .signal-track { width: 100%; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-copy { min-height: 33rem; padding: 2.5rem 1.25rem 2rem; gap: 2.5rem; }
+  .design-completion.reference-editorial.editorial-homepage #hero h1 { font-size: clamp(2.5rem, 10.6vw, 4.2rem); letter-spacing: -0.065em; line-height: 1.03; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-bottom { gap: 1.4rem; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-lead { font-size: 1rem; max-width: 35ch; }
+  .design-completion #hero .hero-actions { gap: 0.5rem 1.25rem; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-primary { min-height: 3.25rem; gap: 1rem; }
+  .design-completion.reference-editorial.editorial-homepage #hero .hero-art,
+  .design-completion #hero .site-atlas { min-height: 29rem; }
+  .design-completion #hero .atlas-kicker { inset: 1.4rem 1.25rem auto; }
+  .design-completion #hero .atlas-range { right: 1.25rem; bottom: 1rem; }
+  .design-completion.reference-editorial.editorial-homepage .final h2 { max-width: 16ch; font-size: clamp(2.5rem, 9vw, 3.7rem); }
+  .design-completion.reference-editorial.editorial-homepage .result-item { min-height: 0; padding-block: 2.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .design-completion #hero .atlas-shot { transition: none; }
+  .design-completion #hero .atlas-shot:hover,
+  .design-completion #hero .atlas-shot:focus-visible { transform: none; }
+}

@@ -6,13 +6,52 @@ interface Props {
   href: string;
   action: string;
   accessibleAction?: string;
+  signalVariant?: string;
+  mediaSrc?: string;
+  mediaAlt?: string;
+  mediaVariant?: string;
 }
-const { title, context, summary, href, action, accessibleAction } = Astro.props;
+import SignalField from "./SignalField.astro";
+const { title, context, summary, href, action, accessibleAction, signalVariant, mediaSrc, mediaAlt = "", mediaVariant } = Astro.props;
 ---
 
 <article class="case-preview">
-  <p class="metadata">{context}</p>
-  <h2>{title}</h2>
-  <p>{summary}</p>
-  <a class="button" href={href} aria-label={accessibleAction}>{action}</a>
+  {mediaSrc ? (
+    <>
+      <figure class="case-preview-media" data-case-preview-media={mediaVariant}>
+        <img src={mediaSrc} alt={mediaAlt} width="1440" height="960" loading="lazy" decoding="async" />
+      </figure>
+      <div class="case-preview-copy">
+        <p class="metadata">{context}</p>
+        <h2>{title}</h2>
+        <p>{summary}</p>
+        <a class="button" href={href} aria-label={accessibleAction}>{action}</a>
+      </div>
+    </>
+  ) : signalVariant ? (
+    <>
+      <SignalField variant={signalVariant} caseField />
+      <div class="case-preview-copy">
+        <p class="metadata">{context}</p>
+        <h2>{title}</h2>
+        <p>{summary}</p>
+        <a class="button" href={href} aria-label={accessibleAction}>{action}</a>
+      </div>
+    </>
+  ) : (
+    <>
+      <p class="metadata">{context}</p>
+      <h2>{title}</h2>
+      <p>{summary}</p>
+      <a class="button" href={href} aria-label={accessibleAction}>{action}</a>
+    </>
+  )}
 </article>
+
+<style>
+  .case-preview { min-width: 0; }
+  .case-preview-media { min-width: 0; margin: 0; overflow: hidden; background: #09080b; }
+  .case-preview-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  .case-preview-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; justify-content: flex-end; }
+  h2 { min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
+</style>
